@@ -43,4 +43,5 @@ module "lambda" {
   package_file        = "../bin/lambda.zip"
   history_bucket_arn  = module.s3.history_bucket_arn
   history_bucket_name = module.s3.history_bucket_name
+  monitor_targets     = var.monitor_targets
 }

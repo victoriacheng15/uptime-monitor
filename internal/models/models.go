@@ -25,10 +25,6 @@ type HistoryResponse struct {
 	History map[string][]CheckResult `json:"history"`
 }
 
-func Hello() string {
-	return "hello from models"
-}
-
 func NewHealthResponse(status string) HealthResponse {
 	return HealthResponse{
 		Status:    status,

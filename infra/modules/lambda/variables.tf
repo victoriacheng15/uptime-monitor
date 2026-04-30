@@ -17,3 +17,8 @@ variable "history_bucket_name" {
   description = "Name of the S3 bucket storing runtime monitor data."
   type        = string
 }
+
+variable "monitor_targets" {
+  description = "Comma-separated list of URLs checked by the uptime monitor."
+  type        = string
+}
