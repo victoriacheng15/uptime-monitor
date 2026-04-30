@@ -1,0 +1,9 @@
+page_title: "System Logs & Milestones"
+intro_text: "A chronological view of how the uptime monitor evolved."
+chapters:
+  - title: "The Genesis"
+    intro: "Initial project skeleton."
+    timeline:
+      - date: "2026-04-30"
+        title: "Skeleton Created"
+        description: "Hello-world files added across the planned project structure."
