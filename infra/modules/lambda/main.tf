@@ -68,7 +68,8 @@ resource "aws_lambda_function" "backend" {
 
   environment {
     variables = {
-      HISTORY_BUCKET = var.history_bucket_name
+      HISTORY_BUCKET  = var.history_bucket_name
+      MONITOR_TARGETS = var.monitor_targets
     }
   }
 }

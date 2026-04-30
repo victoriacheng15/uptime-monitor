@@ -27,3 +27,8 @@ variable "lambda_function_name" {
   type        = string
   default     = "uptime-monitor"
 }
+
+variable "monitor_targets" {
+  description = "Comma-separated list of URLs checked by the uptime monitor."
+  type        = string
+}

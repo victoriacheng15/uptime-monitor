@@ -9,6 +9,7 @@ test:
 coverage:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
+	rm coverage.out
 
 update:
 	go get -u ./...
