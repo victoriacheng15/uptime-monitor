@@ -35,3 +35,12 @@ module "s3" {
   history_bucket_name = var.history_bucket_name
   tfstate_bucket_name = var.tfstate_bucket_name
 }
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  function_name       = var.lambda_function_name
+  package_file        = "../bin/lambda.zip"
+  history_bucket_arn  = module.s3.history_bucket_arn
+  history_bucket_name = module.s3.history_bucket_name
+}

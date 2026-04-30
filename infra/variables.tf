@@ -21,3 +21,9 @@ variable "tfstate_bucket_name" {
   type        = string
   default     = "uptime-monitor-tfstate"
 }
+
+variable "lambda_function_name" {
+  description = "Lambda function name for the uptime monitor backend."
+  type        = string
+  default     = "uptime-monitor"
+}
