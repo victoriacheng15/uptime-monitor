@@ -1,16 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"context"
 
-	"uptime-monitor/internal/models"
-	"uptime-monitor/internal/monitor"
-	"uptime-monitor/internal/storage"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
+
+	"uptime-monitor/internal/api"
 )
 
 func main() {
-	fmt.Println("hello from uptime-monitor lambda backend")
-	fmt.Println(models.Hello())
-	fmt.Println(monitor.Hello())
-	fmt.Println(storage.Hello())
+	adapter := httpadapter.NewV2(api.NewRouter())
+	lambda.Start(func(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+		return adapter.ProxyWithContext(ctx, request)
+	})
 }

@@ -1,4 +1,4 @@
-.PHONY: format test coverage update lambda-build setup-tailwind web-build
+.PHONY: format test coverage update lambda-build lambda-package setup-tailwind web-build
 
 format:
 	gofmt -w ./cmd ./internal
@@ -15,7 +15,10 @@ update:
 	go mod tidy
 
 lambda-build:
-	go build -o bin/lambda ./cmd/lambda
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/bootstrap ./cmd/lambda
+
+lambda-package: lambda-build
+	cd bin && zip -q lambda.zip bootstrap
 
 setup-tailwind:
 	@echo "Downloading tailwind css cli..." && \

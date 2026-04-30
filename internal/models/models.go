@@ -4,7 +4,6 @@ import "time"
 
 type HealthResponse struct {
 	Status    string `json:"status"`
-	Version   string `json:"version"`
 	Timestamp string `json:"timestamp"`
 }
 
@@ -30,10 +29,9 @@ func Hello() string {
 	return "hello from models"
 }
 
-func NewHealthResponse(status, version string) HealthResponse {
+func NewHealthResponse(status string) HealthResponse {
 	return HealthResponse{
 		Status:    status,
-		Version:   version,
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
 	}
 }
