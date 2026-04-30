@@ -1,0 +1,33 @@
+name: Infra
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/**/*.tf"
+  pull_request:
+    paths:
+      - "infra/**/*.tf"
+  workflow_dispatch:
+
+jobs:
+  tofu:
+    name: OpenTofu Format and Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: opentofu/setup-opentofu@v1
+
+      - name: Check formatting
+        run: tofu fmt -check -recursive infra
+
+      - name: Init
+        working-directory: infra
+        run: tofu init -backend=false
+
+      - name: Validate
+        working-directory: infra
+        run: tofu validate
