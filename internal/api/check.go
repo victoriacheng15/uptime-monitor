@@ -8,11 +8,27 @@ import (
 
 	"uptime-monitor/internal/models"
 	"uptime-monitor/internal/monitor"
+	"uptime-monitor/internal/storage"
 )
 
 var performChecks = func(ctx context.Context, urls []string) []models.CheckResult {
 	checker := monitor.New(nil)
 	return checker.PerformChecks(ctx, urls)
+}
+
+type persistence interface {
+	Save(ctx context.Context, results []models.CheckResult) error
+	Latest(ctx context.Context) (models.LatestResponse, error)
+	History(ctx context.Context) (models.HistoryResponse, error)
+}
+
+var newPersistence = func(ctx context.Context) (persistence, error) {
+	bucket := os.Getenv("HISTORY_BUCKET")
+	if bucket == "" {
+		return nil, errMissingHistoryBucket
+	}
+
+	return storage.NewS3(ctx, bucket)
 }
 
 func checkHandler() http.HandlerFunc {
@@ -30,6 +46,16 @@ func checkHandler() http.HandlerFunc {
 		}
 
 		results := performChecks(r.Context(), targets)
+		store, err := newPersistence(r.Context())
+		if err != nil {
+			http.Error(w, "storage is not available", http.StatusInternalServerError)
+			return
+		}
+		if err := store.Save(r.Context(), results); err != nil {
+			http.Error(w, "failed to persist check results", http.StatusInternalServerError)
+			return
+		}
+
 		writeJSON(w, http.StatusOK, results)
 	}
 }
