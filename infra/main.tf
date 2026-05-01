@@ -45,3 +45,11 @@ module "lambda" {
   history_bucket_name = module.s3.history_bucket_name
   monitor_targets     = var.monitor_targets
 }
+
+module "events" {
+  source = "./modules/events"
+
+  function_name       = module.lambda.function_name
+  function_arn        = module.lambda.function_arn
+  schedule_expression = var.check_schedule_expression
+}
