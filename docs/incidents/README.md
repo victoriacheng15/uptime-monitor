@@ -26,15 +26,19 @@ Minor configuration drift or noisy logs that do not impact system health should 
 
 ### Severity Levels
 
-- **High**: Service down, data loss, or security breach.
-- **Medium**: Partial degradation, performance issues, or feature malfunction.
-- **Low**: Minor bugs, cosmetic issues, or non-critical failures.
+| Level | Meaning |
+| :--- | :--- |
+| **🔴 High** | Service down, data loss, or security breach. |
+| **🟡 Medium** | Partial degradation, performance issues, or feature malfunction. |
+| **🔵 Low** | Minor bugs, cosmetic issues, or non-critical failures. |
 
 ### Status
 
-- **Investigating**: Identifying the root cause.
-- **Mitigated**: Temporary fix applied, service restored.
-- **Resolved**: Root cause identified and permanent fix implemented.
+| Status | Meaning |
+| :--- | :--- |
+| **🚧 Investigating** | Identifying the root cause. |
+| **🩹 Mitigated** | Temporary fix applied, service restored. |
+| **✅ Resolved** | Root cause identified and permanent fix implemented. |
 
 ### RCA Template
 
@@ -43,9 +47,9 @@ To document a new incident, create a new file named `XXX-descriptive-title.md`.
 ```markdown
 # RCA [XXX]: [Descriptive Title]
 
-- **Status:** Investigating | Mitigated | Resolved
+- **Status:** 🚧 Investigating | 🩹 Mitigated | ✅ Resolved
 - **Date:** YYYY-MM-DD
-- **Severity:** High | Medium | Low
+- **Severity:** 🔴 High | 🟡 Medium | 🔵 Low
 - **Author:** Victoria Cheng
 
 ## Summary

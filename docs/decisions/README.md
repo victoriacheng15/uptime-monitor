@@ -6,7 +6,11 @@ This directory serves as the **Institutional Memory** for the Uptime Monitor. It
 
 ## Decision Log
 
-No decisions recorded yet.
+| ADR | Title | Status |
+| :--- | :--- | :--- |
+| [001](./001-use-lambda-function-url-for-backend-api.md) | Use Lambda Function URL for Backend API | 🔵 Accepted |
+| [002](./002-store-uptime-results-as-s3-json-files.md) | Store Uptime Results as S3 JSON Files | 🔵 Accepted |
+| [003](./003-use-eventbridge-for-hourly-scheduled-checks.md) | Use EventBridge for Hourly Scheduled Checks | 🔵 Accepted |
 
 ---
 
@@ -18,9 +22,9 @@ This section defines how architectural changes are proposed, evaluated, and docu
 
 | Status | Meaning |
 | :--- | :--- |
-| **Proposed** | Planning phase. The design is being discussed or researched. |
-| **Accepted** | Implementation phase or completed. This is the current project standard. |
-| **Superseded** | Historical record. This decision has been replaced by a newer ADR. |
+| **🟢 Proposed** | Planning phase. The design is being discussed or researched. |
+| **🔵 Accepted** | Implementation phase or completed. This is the current project standard. |
+| **🟡 Superseded** | Historical record. This decision has been replaced by a newer ADR. |
 
 ### Conventions
 
@@ -36,7 +40,7 @@ To create a new proposal, copy the block below into a new `.md` file.
 ```markdown
 # ADR [00X]: [Descriptive Title]
 
-- **Status:** Proposed | Accepted | Superseded
+- **Status:** 🟢 Proposed | 🔵 Accepted | 🟡 Superseded
 - **Date:** YYYY-MM-DD
 - **Author:** Victoria Cheng
 
