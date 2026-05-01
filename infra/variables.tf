@@ -32,3 +32,9 @@ variable "monitor_targets" {
   description = "Comma-separated list of URLs checked by the uptime monitor."
   type        = string
 }
+
+variable "check_schedule_expression" {
+  description = "EventBridge schedule expression for uptime checks."
+  type        = string
+  default     = "rate(1 hour)"
+}

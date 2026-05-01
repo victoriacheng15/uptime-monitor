@@ -17,3 +17,8 @@ output "lambda_function_url" {
   description = "Public Lambda Function URL for the uptime monitor backend."
   value       = module.lambda.function_url
 }
+
+output "scheduled_check_rule_name" {
+  description = "EventBridge rule that triggers scheduled uptime checks."
+  value       = module.events.rule_name
+}
