@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,15 +14,17 @@ import (
 
 func TestRouter(t *testing.T) {
 	tests := []struct {
-		name       string
-		method     string
-		path       string
-		wantStatus int
-		wantAllow  string
-		wantJSON   bool
-		wantHealth models.HealthResponse
-		wantChecks bool
-		envTargets string
+		name        string
+		method      string
+		path        string
+		wantStatus  int
+		wantAllow   string
+		wantJSON    bool
+		wantHealth  models.HealthResponse
+		wantChecks  bool
+		wantLatest  bool
+		wantHistory bool
+		envTargets  string
 	}{
 		{
 			name:       "health returns healthy response",
@@ -46,6 +49,36 @@ func TestRouter(t *testing.T) {
 			wantJSON:   true,
 			wantChecks: true,
 			envTargets: "https://site-a.example,https://site-b.example",
+		},
+		{
+			name:       "latest returns stored snapshot",
+			method:     http.MethodGet,
+			path:       "/latest",
+			wantStatus: http.StatusOK,
+			wantJSON:   true,
+			wantLatest: true,
+		},
+		{
+			name:       "latest rejects unsupported method",
+			method:     http.MethodPost,
+			path:       "/latest",
+			wantStatus: http.StatusMethodNotAllowed,
+			wantAllow:  http.MethodGet,
+		},
+		{
+			name:        "history returns stored entries",
+			method:      http.MethodGet,
+			path:        "/history",
+			wantStatus:  http.StatusOK,
+			wantJSON:    true,
+			wantHistory: true,
+		},
+		{
+			name:       "history rejects unsupported method",
+			method:     http.MethodPost,
+			path:       "/history",
+			wantStatus: http.StatusMethodNotAllowed,
+			wantAllow:  http.MethodGet,
 		},
 		{
 			name:       "check rejects unsupported method",
@@ -74,6 +107,24 @@ func TestRouter(t *testing.T) {
 			req := httptest.NewRequest(tt.method, tt.path, nil)
 			rec := httptest.NewRecorder()
 			t.Setenv("MONITOR_TARGETS", tt.envTargets)
+
+			previousPersistence := newPersistence
+			newPersistence = func(context.Context) (persistence, error) {
+				return fakePersistence{
+					latest: models.LatestResponse{
+						Sites:     []models.CheckResult{{URL: "https://site-a.example", IsUp: true}},
+						UpdatedAt: "2026-04-30T12:00:00Z",
+					},
+					history: models.HistoryResponse{
+						History: map[string][]models.CheckResult{
+							"https://site-a.example": {{URL: "https://site-a.example", IsUp: true}},
+						},
+					},
+				}, nil
+			}
+			t.Cleanup(func() {
+				newPersistence = previousPersistence
+			})
 
 			if tt.wantChecks {
 				previous := performChecks
@@ -127,6 +178,31 @@ func TestRouter(t *testing.T) {
 				return
 			}
 
+			if tt.wantLatest {
+				var response models.LatestResponse
+				if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
+					t.Fatalf("decode response: %v", err)
+				}
+				if len(response.Sites) != 1 || response.Sites[0].URL != "https://site-a.example" {
+					t.Fatalf("expected latest site response, got %#v", response)
+				}
+				if response.UpdatedAt != "2026-04-30T12:00:00Z" {
+					t.Fatalf("expected updated_at timestamp, got %q", response.UpdatedAt)
+				}
+				return
+			}
+
+			if tt.wantHistory {
+				var response models.HistoryResponse
+				if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
+					t.Fatalf("decode response: %v", err)
+				}
+				if len(response.History["https://site-a.example"]) != 1 {
+					t.Fatalf("expected one history entry, got %#v", response)
+				}
+				return
+			}
+
 			var response models.HealthResponse
 			if err := json.NewDecoder(rec.Body).Decode(&response); err != nil {
 				t.Fatalf("decode response: %v", err)
@@ -138,6 +214,66 @@ func TestRouter(t *testing.T) {
 
 			if _, err := time.Parse(time.RFC3339, response.Timestamp); err != nil {
 				t.Fatalf("expected RFC3339 timestamp, got %q: %v", response.Timestamp, err)
+			}
+		})
+	}
+}
+
+func TestRouterStorageError(t *testing.T) {
+	tests := []struct {
+		name       string
+		path       string
+		method     string
+		envTargets string
+		wantStatus int
+	}{
+		{
+			name:       "check returns error when persistence fails",
+			path:       "/check",
+			method:     http.MethodPost,
+			envTargets: "https://site-a.example",
+			wantStatus: http.StatusInternalServerError,
+		},
+		{
+			name:       "latest returns error when persistence fails",
+			path:       "/latest",
+			method:     http.MethodGet,
+			wantStatus: http.StatusInternalServerError,
+		},
+		{
+			name:       "history returns error when persistence fails",
+			path:       "/history",
+			method:     http.MethodGet,
+			wantStatus: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("MONITOR_TARGETS", tt.envTargets)
+			previousPersistence := newPersistence
+			newPersistence = func(context.Context) (persistence, error) {
+				return nil, errors.New("storage failed")
+			}
+			t.Cleanup(func() {
+				newPersistence = previousPersistence
+			})
+
+			previousChecks := performChecks
+			performChecks = func(_ context.Context, urls []string) []models.CheckResult {
+				return []models.CheckResult{{URL: urls[0], IsUp: true}}
+			}
+			t.Cleanup(func() {
+				performChecks = previousChecks
+			})
+
+			req := httptest.NewRequest(tt.method, tt.path, nil)
+			rec := httptest.NewRecorder()
+
+			NewRouter().ServeHTTP(rec, req)
+
+			if rec.Code != tt.wantStatus {
+				t.Fatalf("expected status %d, got %d", tt.wantStatus, rec.Code)
 			}
 		})
 	}
@@ -186,4 +322,21 @@ func TestMonitorTargets(t *testing.T) {
 			}
 		})
 	}
+}
+
+type fakePersistence struct {
+	latest  models.LatestResponse
+	history models.HistoryResponse
+}
+
+func (f fakePersistence) Save(context.Context, []models.CheckResult) error {
+	return nil
+}
+
+func (f fakePersistence) Latest(context.Context) (models.LatestResponse, error) {
+	return f.latest, nil
+}
+
+func (f fakePersistence) History(context.Context) (models.HistoryResponse, error) {
+	return f.history, nil
 }
