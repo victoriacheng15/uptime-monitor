@@ -48,10 +48,10 @@ flowchart LR
     Lambda["AWS Lambda"]
     Health["GET /health"]
     Check["POST /check"]
-    Write["Latest and Histroy JSON"]
+    Write["JSON Files in S3"]
     Latest["GET /latest"]
     History["GET /history"]
-    S3["Store JSON files"]
+    S3["JSON Files in S3"]
 
     Schedule -- every hour --> Lambda
     Lambda --> Health
