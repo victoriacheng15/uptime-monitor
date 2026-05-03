@@ -5,7 +5,11 @@ on:
     branches:
       - main
     paths:
-      - "**/*.go"
+      - "cmd/lambda/**"
+      - "internal/api/**"
+      - "internal/models/**"
+      - "internal/monitor/**"
+      - "internal/storage/**"
       - "go.mod"
       - "go.sum"
       - "infra/**/*.tf"
