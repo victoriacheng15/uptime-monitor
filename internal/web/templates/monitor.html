@@ -1,8 +1,15 @@
 {{ define "content" }}
 <div class="flex flex-col gap-12">
   <div class="flex flex-col gap-2">
-    <h2 class="text-2xl font-bold text-white">Live Monitor</h2>
-    <p class="text-zinc-400">Fleet-wide availability tracking with 5-hour historical pulse.</p>
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-zinc-100">Live Monitor</h2>
+      {{- if .Uptime -}}
+      <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+        Last Check: {{ .Uptime.UpdatedAt.Format "2006-01-02 15:04 MST" }}
+      </span>
+      {{- end -}}
+    </div>
+    <p class="text-zinc-400">Fleet-wide availability tracking.</p>
   </div>
 
   <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl">
@@ -12,21 +19,30 @@
           <th class="px-6 py-4">Site Name</th>
           <th class="px-6 py-4">Status</th>
           <th class="px-6 py-4 text-right">Latency</th>
-          <th class="px-6 py-4 text-center">Pulse (5h)</th>
         </tr>
       </thead>
       <tbody id="sites-table-body" class="divide-y divide-zinc-800">
-        <tr class="animate-pulse">
-          <td class="px-6 py-6" colspan="4">
-            <div class="flex items-center justify-center space-x-2 text-zinc-500">
-              <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span>Fetching latest results...</span>
-            </div>
-          </td>
-        </tr>
+        {{- if .Uptime -}}
+          {{- range .Uptime.Sites -}}
+          <tr class="hover:bg-zinc-800 transition-colors">
+            <td class="px-6 py-4 font-medium text-zinc-100 font-mono">{{ .URL }}</td>
+            <td class="px-6 py-4">
+              {{- if .IsUp -}}
+              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-emerald-400 bg-emerald-400/10">UP</span>
+              {{- else -}}
+              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-red-400 bg-red-400/10">DOWN</span>
+              {{- end -}}
+            </td>
+            <td class="px-6 py-4 text-right tabular-nums text-zinc-300 font-mono">{{ .LatencyMS }}ms</td>
+          </tr>
+          {{- end -}}
+        {{- else -}}
+          <tr>
+            <td class="px-6 py-12 text-center text-zinc-500" colspan="3">
+              No monitoring data available for this snapshot.
+            </td>
+          </tr>
+        {{- end -}}
       </tbody>
     </table>
   </div>
@@ -41,69 +57,10 @@
     {{- range $specs }}
     <article class="rounded-lg border border-zinc-800 bg-zinc-900 p-4 shadow-sm flex flex-col gap-1">
       <h3 class="text-xs font-medium uppercase text-cyan-400 tracking-wider">{{ .Label }}</h3>
-      <p class="text-lg font-semibold text-white font-mono">{{ .Value }}</p>
+      <p class="text-lg font-semibold text-zinc-100 font-mono">{{ .Value }}</p>
     </article>
     {{- end }}
   </div>
 
-  <div class="text-center text-zinc-500">
-    <p class="text-xs italic">Legend: [■] 200 OK | [!] Slow (>500ms) | [X] Failed/Down</p>
-  </div>
 </div>
-
-<script>
-  const API_BASE_URL = "{{ .APIBaseURL }}";
-  const tableBody = document.getElementById('sites-table-body');
-  const systemStatus = document.getElementById('system-status');
-
-  async function fetchStatus() {
-    if (!API_BASE_URL) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/latest`);
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      renderTable(data.sites);
-      const anyDown = data.sites.some(site => !site.is_up);
-      if (anyDown) {
-        systemStatus.classList.remove('text-emerald-400', 'border-emerald-500/20');
-        systemStatus.classList.add('text-red-400', 'border-red-500/20');
-        systemStatus.innerHTML = `
-          <span class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
-          </span>
-          System: ISSUE
-        `;
-      }
-    } catch (error) {
-      console.error("Failed to fetch latest results:", error);
-      tableBody.innerHTML = '<tr><td class="px-6 py-12 text-center text-red-400" colspan="4">Failed to load latest results.</td></tr>';
-    }
-  }
-
-  function renderTable(sites) {
-    tableBody.innerHTML = '';
-    sites.forEach(site => {
-      const row = document.createElement('tr');
-      row.className = 'hover:bg-zinc-800 transition-colors';
-      const statusClass = site.is_up ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10';
-      row.innerHTML = `
-        <td class="px-6 py-4 font-medium text-white font-mono">${site.url.replace('https://', '')}</td>
-        <td class="px-6 py-4"><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-bold ${statusClass}">${site.is_up ? 'UP' : 'DOWN'}</span></td>
-        <td class="px-6 py-4 text-right tabular-nums text-zinc-300 font-mono">${site.latency_ms}ms</td>
-        <td class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1">${renderPulse(site)}</div></td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
-
-  function renderPulse(site) {
-    const blocks = [];
-    for (let i = 0; i < 4; i++) blocks.push('<div class="h-4 w-2 rounded-sm bg-zinc-800"></div>');
-    const colorClass = site.is_up ? 'bg-emerald-500' : 'bg-red-500';
-    blocks.push(`<div class="h-4 w-2 rounded-sm ${colorClass}"></div>`);
-    return blocks.join('');
-  }
-  fetchStatus();
-</script>
 {{ end }}
