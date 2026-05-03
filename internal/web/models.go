@@ -1,5 +1,7 @@
 package web
 
+import "time"
+
 type SiteConfig struct {
 	Header       HeaderConfig        `yaml:"header"`
 	SystemSpec   SystemSpecification `yaml:"system_specification"`
@@ -94,9 +96,25 @@ type Artifact struct {
 	URL  string `yaml:"url"`
 }
 
+// Uptime data from Lambda (for build-time hydration)
+type CheckResult struct {
+	URL        string    `json:"url"`
+	StatusCode int       `json:"status_code"`
+	IsUp       bool      `json:"is_up"`
+	LatencyMS  int       `json:"latency_ms"`
+	Timestamp  time.Time `json:"timestamp"`
+	Error      string    `json:"error"`
+}
+
+type LatestResponse struct {
+	Sites     []CheckResult `json:"sites"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
 type TemplateData struct {
 	Landing    *SiteConfig
 	Evolution  *EvolutionConfig
+	Uptime     *LatestResponse
 	Year       int
 	APIBaseURL string
 }

@@ -1,8 +1,10 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -51,23 +53,69 @@ func (g *Generator) Generate() error {
 		APIBaseURL: g.APIBaseURL,
 	}
 
+	// Fetch uptime data for monitor page if API URL is provided
+	var uptimeData *LatestResponse
+	if g.APIBaseURL != "" {
+		uptimeData, err = g.fetchUptimeData()
+		if err != nil {
+			fmt.Printf("Warning: Failed to fetch uptime data: %v. Site will generate with empty monitor.\n", err)
+		}
+	}
+
+	// Render Landing (index.html)
 	if err := g.renderWithBase("index.html", "index.html", data); err != nil {
 		return err
 	}
 
-	if err := g.renderWithBase("monitor.html", "monitor.html", data); err != nil {
+	// Render Monitor (monitor.html)
+	monitorData := TemplateData{
+		Landing:    landingConfig,
+		Year:       currentYear,
+		APIBaseURL: g.APIBaseURL,
+		Uptime:     uptimeData,
+	}
+	// Inject specs directly for the monitor page loop as requested (not in landing.yaml)
+	monitorData.Landing.MonitorSpecs = []MonitorSpec{
+		{Label: "Check Interval", Value: "60 Minutes"},
+		{Label: "Retention", Value: "Last 5 Checks"},
+		{Label: "Region", Value: "ca-central-1"},
+	}
+
+	if err := g.renderWithBase("monitor.html", "monitor.html", monitorData); err != nil {
 		return err
 	}
 
+	// Render Evolution
 	if err := g.renderWithBase("evolution.html", "evolution.html", data); err != nil {
 		return err
 	}
 
+	// Render llms.txt
 	if err := g.renderRawTemplate("llms.txt", "llms.txt", data); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (g *Generator) fetchUptimeData() (*LatestResponse, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(fmt.Sprintf("%s/latest", g.APIBaseURL))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch data: status %d", resp.StatusCode)
+	}
+
+	var latest LatestResponse
+	if err := json.NewDecoder(resp.Body).Decode(&latest); err != nil {
+		return nil, err
+	}
+
+	return &latest, nil
 }
 
 func (g *Generator) reverseEvolution(cfg *EvolutionConfig) {

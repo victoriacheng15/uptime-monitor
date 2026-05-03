@@ -1,20 +1,20 @@
 {{ define "content" }}
 <!-- Hero Section -->
 <section class="flex flex-col gap-6 py-12 border-b border-zinc-800">
-  <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
+  <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-zinc-100 leading-tight">
     {{ .Landing.Hero.Headline }}
   </h2>
   <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">
     {{ .Landing.Hero.BriefDescription }}
   </p>
   <div class="flex flex-wrap gap-4">
-    <a href="{{ .Landing.Hero.CTALink }}" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg bg-zinc-900 text-white border border-zinc-800 font-bold hover:bg-zinc-800 transition-colors">
+    <a href="{{ .Landing.Hero.CTALink }}" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg bg-zinc-900 text-zinc-100 border border-zinc-800 font-bold hover:bg-zinc-800 transition-colors">
       {{ .Landing.Hero.CTAText }}
     </a>
-    <a href="{{ .Landing.Hero.SecondaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-white font-bold hover:bg-zinc-900 transition-colors">
+    <a href="{{ .Landing.Hero.SecondaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-zinc-100 font-bold hover:bg-zinc-900 transition-colors">
       {{ .Landing.Hero.SecondaryCTAText }}
     </a>
-    <a href="{{ .Landing.Hero.TertiaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-white font-bold hover:bg-zinc-900 transition-colors">
+    <a href="{{ .Landing.Hero.TertiaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-zinc-100 font-bold hover:bg-zinc-900 transition-colors">
       {{ .Landing.Hero.TertiaryCTAText }}
     </a>
   </div>
@@ -62,7 +62,7 @@
         {{ end }}
       </div>
       <div class="flex flex-col gap-2">
-        <h4 class="text-lg font-bold text-white leading-none">{{ .Name }}</h4>
+        <h4 class="text-lg font-bold text-zinc-100 leading-none">{{ .Name }}</h4>
         <p class="text-zinc-400 text-sm leading-relaxed">{{ .Description }}</p>
       </div>
     </article>
