@@ -1,9 +1,34 @@
-page_title: "System Logs & Milestones"
-intro_text: "A chronological view of how the uptime monitor evolved."
+page_title: "How This Was Built"
+intro_text: "A log showing how this project grew from a repository skeleton to a working website monitor."
 chapters:
-  - title: "The Genesis"
-    intro: "Initial project skeleton."
+  - title: "The Inception"
+    intro: "Establishing the core code and cloud resources needed to begin website monitoring."
     timeline:
       - date: "2026-04-30"
-        title: "Skeleton Created"
-        description: "Hello-world files added across the planned project structure."
+        title: "The Monitoring Engine"
+        description: |
+          - Built a concurrent monitoring engine in Go that checks multiple websites simultaneously.
+          - Provisioned AWS Lambda and S3 infrastructure to handle serverless execution and data storage.
+        artifacts:
+          - name: "ADR 001: Lambda Function URL"
+            url: "docs/decisions/001-use-lambda-function-url-for-backend-api.md"
+  - title: "Reliability and Persistence"
+    intro: "Improving the system by tracking past results and automating the update process."
+    timeline:
+      - date: "2026-05-01"
+        title: "Tracking Over Time"
+        description: |
+          - Implemented historical trend tracking using S3 to capture site performance over time.
+          - Configured automated EventBridge triggers and GitHub Actions for continuous system updates.
+        artifacts:
+          - name: "ADR 002: S3 JSON Storage"
+            url: "docs/decisions/002-store-uptime-results-as-s3-json-files.md"
+          - name: "ADR 003: EventBridge Scheduling"
+            url: "docs/decisions/003-use-eventbridge-for-hourly-scheduled-checks.md"
+  - title: "Visibility & Technical Narrative"
+    intro: "Establishing a technical hub to bridge the gap between architecture and live status."
+    timeline:
+      - date: "2026-05-03"
+        title: "Interface & Evolution Log"
+        description: |
+          - Launched the project site to show the technical narrative and live status.

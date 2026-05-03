@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ if .Evolution }}{{ .Evolution.PageTitle }} | {{ .Landing.Header.ProjectName }}{{ else }}{{ .Landing.Header.ProjectName }}{{ end }}</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-zinc-950 font-open-sans text-zinc-100 antialiased min-h-screen flex flex-col">
+  <div class="mx-auto w-11/12 max-w-4xl flex flex-col flex-grow gap-12">
+    <header class="border-b border-zinc-800 py-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <div>
+        <a href="index.html" class="group block">
+          <h1 class="text-3xl font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">{{ .Landing.Header.ProjectName }}</h1>
+        </a>
+        <p class="mt-2 text-zinc-400 text-sm">{{ .Landing.Hero.SubHeadline }}</p>
+      </div>
+      <nav class="flex items-center gap-6 text-sm font-medium">
+        <div id="system-status" class="flex items-center gap-2 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20 shadow-sm" aria-live="polite">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          </span>
+          System: OK
+        </div>
+        <a href="monitor.html" class="text-zinc-400 hover:text-white transition-colors">Monitor</a>
+        <a href="evolution.html" class="text-zinc-400 hover:text-white transition-colors">Evolution</a>
+      </nav>
+    </header>
+
+    <main class="flex-grow flex flex-col gap-12">
+      {{ block "content" . }}{{ end }}
+    </main>
+
+    <footer class="py-8">
+        <div class="border-t border-zinc-800 pt-6 flex justify-center items-center gap-6 text-zinc-500">
+            <p class="text-xs">&copy; {{ .Year }} {{ .Landing.Footer.Author }}</p>
+            <div class="flex gap-4 items-center">
+                <a href="{{ .Landing.Footer.GithubLink }}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                </a>
+                <a href="{{ .Landing.Footer.LinkedinLink }}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+  </div>
+</body>
+</html>

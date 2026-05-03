@@ -1,15 +1,72 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ .Title }}</title>
-    <link rel="stylesheet" href="/styles.css">
-  </head>
-  <body>
-    <main>
-      <h1>{{ .Title }}</h1>
-      <p>Hello from the uptime monitor frontend.</p>
-    </main>
-  </body>
-</html>
+{{ define "content" }}
+<!-- Hero Section -->
+<section class="flex flex-col gap-6 py-12 border-b border-zinc-800">
+  <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
+    {{ .Landing.Hero.Headline }}
+  </h2>
+  <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">
+    {{ .Landing.Hero.BriefDescription }}
+  </p>
+  <div class="flex flex-wrap gap-4">
+    <a href="{{ .Landing.Hero.CTALink }}" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg bg-zinc-900 text-white border border-zinc-800 font-bold hover:bg-zinc-800 transition-colors">
+      {{ .Landing.Hero.CTAText }}
+    </a>
+    <a href="{{ .Landing.Hero.SecondaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-white font-bold hover:bg-zinc-900 transition-colors">
+      {{ .Landing.Hero.SecondaryCTAText }}
+    </a>
+    <a href="{{ .Landing.Hero.TertiaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-white font-bold hover:bg-zinc-900 transition-colors">
+      {{ .Landing.Hero.TertiaryCTAText }}
+    </a>
+  </div>
+</section>
+
+<!-- Narrative Sections -->
+<div class="flex flex-col gap-12 text-sm">
+  <section class="flex flex-col gap-6">
+    <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.WhatIsUptime.Title }}</h3>
+    <div class="flex flex-col gap-4 text-zinc-400 leading-relaxed">
+      {{ range .Landing.WhatIsUptime.Content }}
+      <p>{{ . }}</p>
+      {{ end }}
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-6">
+    <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.WhyItMatters.Title }}</h3>
+    <ul class="flex flex-col gap-4 list-none p-0">
+      {{ range .Landing.WhyItMatters.Points }}
+      <li class="flex gap-4 items-start">
+        <svg class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span class="text-zinc-400 leading-relaxed">{{ . }}</span>
+      </li>
+      {{ end }}
+    </ul>
+  </section>
+</div>
+
+<!-- Key Features -->
+<section class="flex flex-col gap-8">
+  <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.KeyFeatures.Title }}</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    {{ range .Landing.KeyFeatures.Features }}
+    <article class="flex flex-col gap-4 p-6 rounded-xl bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-all">
+      <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+        {{ if eq .Icon "bolt" }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        {{ else if eq .Icon "database" }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+        {{ else if eq .Icon "shield-check" }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+        {{ else if eq .Icon "code" }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+        {{ end }}
+      </div>
+      <div class="flex flex-col gap-2">
+        <h4 class="text-lg font-bold text-white leading-none">{{ .Name }}</h4>
+        <p class="text-zinc-400 text-sm leading-relaxed">{{ .Description }}</p>
+      </div>
+    </article>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
