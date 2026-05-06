@@ -8,9 +8,9 @@ The repository uses GitHub Actions for both CI and CD:
 
 | Workflow | Purpose |
 | :--- | :--- |
-| `.github/workflows/ci.yaml` | Runs Go checks and tests for backend changes. |
-| `.github/workflows/infra.yaml` | Runs Terraform formatting and validation for infrastructure changes. |
-| `.github/workflows/deploy.yaml` | Builds the Lambda package and applies AWS infrastructure changes. |
+| `ci.yaml` | Runs Go checks and tests for backend changes. |
+| `infra.yaml` | Runs Terraform formatting and validation for infrastructure changes. |
+| `deploy.yaml` | Builds the Lambda package and applies AWS infrastructure changes. |
 
 ## CI
 
