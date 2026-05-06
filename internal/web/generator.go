@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -55,10 +56,17 @@ func (g *Generator) Generate() error {
 
 	// Fetch uptime data for monitor page if API URL is provided
 	var uptimeData *LatestResponse
+	var latencyAverages []LatencyAverage
 	if g.APIBaseURL != "" {
 		uptimeData, err = g.fetchUptimeData()
 		if err != nil {
 			fmt.Printf("Warning: Failed to fetch uptime data: %v. Site will generate with empty monitor.\n", err)
+		}
+		historyData, err := g.fetchHistoryData()
+		if err != nil {
+			fmt.Printf("Warning: Failed to fetch history data: %v. Site will generate without latency averages.\n", err)
+		} else {
+			latencyAverages = averageLatencyByURL(historyData)
 		}
 	}
 
@@ -69,10 +77,11 @@ func (g *Generator) Generate() error {
 
 	// Render Monitor (monitor.html)
 	monitorData := TemplateData{
-		Landing:    landingConfig,
-		Year:       currentYear,
-		APIBaseURL: g.APIBaseURL,
-		Uptime:     uptimeData,
+		Landing:         landingConfig,
+		Year:            currentYear,
+		APIBaseURL:      g.APIBaseURL,
+		Uptime:          uptimeData,
+		LatencyAverages: latencyAverages,
 	}
 	// Inject specs directly for the monitor page loop as requested (not in landing.yaml)
 	monitorData.Landing.MonitorSpecs = []MonitorSpec{
@@ -116,6 +125,62 @@ func (g *Generator) fetchUptimeData() (*LatestResponse, error) {
 	}
 
 	return &latest, nil
+}
+
+func (g *Generator) fetchHistoryData() (*HistoryResponse, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(fmt.Sprintf("%s/history", g.APIBaseURL))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch history: status %d", resp.StatusCode)
+	}
+
+	var history HistoryResponse
+	if err := json.NewDecoder(resp.Body).Decode(&history); err != nil {
+		return nil, err
+	}
+
+	return &history, nil
+}
+
+func averageLatencyByURL(history *HistoryResponse) []LatencyAverage {
+	if history == nil || len(history.History) == 0 {
+		return nil
+	}
+
+	averages := make(map[string]LatencyAverage, len(history.History))
+	for url, entries := range history.History {
+		if len(entries) == 0 {
+			continue
+		}
+
+		total := 0
+		for _, entry := range entries {
+			total += entry.LatencyMS
+		}
+		averages[url] = LatencyAverage{
+			URL:              url,
+			AverageLatencyMS: total / len(entries),
+		}
+	}
+
+	if len(averages) == 0 {
+		return nil
+	}
+
+	ordered := make([]LatencyAverage, 0, len(averages))
+	for _, average := range averages {
+		ordered = append(ordered, average)
+	}
+	sort.SliceStable(ordered, func(i, j int) bool {
+		return ordered[i].AverageLatencyMS > ordered[j].AverageLatencyMS
+	})
+
+	return ordered
 }
 
 func (g *Generator) reverseEvolution(cfg *EvolutionConfig) {

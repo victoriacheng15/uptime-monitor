@@ -1,15 +1,12 @@
 {{ define "content" }}
 <div class="flex flex-col gap-12">
-  <div class="flex flex-col gap-2">
-    <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-bold text-zinc-100">Live Monitor</h2>
-      {{- if .Uptime -}}
-      <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-        Last Check: {{ .Uptime.UpdatedAt.Format "2006-01-02 15:04 MST" }}
-      </span>
-      {{- end -}}
-    </div>
-    <p class="text-zinc-400">Fleet-wide availability tracking.</p>
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-zinc-100">Fleet Status</h2>
+    {{- if .Uptime -}}
+    <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+      Last Check: {{ .Uptime.UpdatedAt.Format "2006-01-02 15:04 MST" }}
+    </span>
+    {{- end -}}
   </div>
 
   <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl">
@@ -60,6 +57,37 @@
       <p class="text-lg font-semibold text-zinc-100 font-mono">{{ .Value }}</p>
     </article>
     {{- end }}
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <h2 class="text-2xl font-bold text-zinc-100">History</h2>
+
+    <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-zinc-950/50 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <tr>
+            <th class="px-6 py-4">Site Name</th>
+            <th class="px-6 py-4 text-right">Average Latency</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-800">
+          {{- if .LatencyAverages -}}
+            {{- range .LatencyAverages -}}
+            <tr class="hover:bg-zinc-800 transition-colors">
+              <td class="px-6 py-4 font-medium text-zinc-100 font-mono">{{ .URL }}</td>
+              <td class="px-6 py-4 text-right tabular-nums text-zinc-300 font-mono">{{ .AverageLatencyMS }}ms</td>
+            </tr>
+            {{- end -}}
+          {{- else -}}
+            <tr>
+              <td class="px-6 py-12 text-center text-zinc-500" colspan="2">
+                No latency history available for this snapshot.
+              </td>
+            </tr>
+          {{- end -}}
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
