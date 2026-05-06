@@ -12,6 +12,8 @@ It monitors multiple websites on an hourly schedule, stores the latest status sn
 
 | Case Study | Problem | How it was diagnosed | Result |
 | :--- | :--- | :--- | :--- |
+| [Why S3 JSON storage](./docs/decisions/002-store-uptime-results-as-s3-json-files.md) | The monitor needed persistent latest status and short per-site history without adding database infrastructure. | S3 fit because the MVP only needed small structured writes, current-state reads, and short history reads; it did not need relational queries, indexes, joins, or high-write throughput. | Results are stored as `latest.json` and `history.json`, keeping storage low-cost, frontend-friendly, and database-free for the MVP. |
+| [Why EventBridge scheduling](./docs/decisions/003-use-eventbridge-for-hourly-scheduled-checks.md) | The monitor needed to run automatically without relying on a user or external client to call `/check`. | EventBridge fit because it keeps the scheduler serverless, avoids a VM cron job or always-on worker, and supports the hourly cadence needed for the first version. | EventBridge invokes the Lambda every hour with `rate(1 hour)`, reusing the same monitor path as manual checks. |
 
 ---
 
@@ -48,18 +50,28 @@ flowchart LR
     Lambda["AWS Lambda"]
     Health["GET /health"]
     Check["POST /check"]
-    Write["JSON Files in S3"]
     Latest["GET /latest"]
     History["GET /history"]
-    S3["JSON Files in S3"]
+    Sites["Monitored sites"]
+    Store["Storage layer"]
+    LatestFile["latest.json"]
+    HistoryFile["history.json"]
+    S3["S3 bucket"]
 
     Schedule -- every hour --> Lambda
     Lambda --> Health
     Lambda --> Check
     Lambda --> Latest
     Lambda --> History
-    Check -- write --> Write
-    Write -- store --> S3 
+    Check -- run checks --> Sites
+    Sites -- results --> Check
+    Check -- save results --> Store
+    Store -- write --> LatestFile
+    Store -- update --> HistoryFile
+    LatestFile -- store --> S3
+    HistoryFile -- store --> S3
+    Latest -- read latest.json --> S3
+    History -- read history.json --> S3
 ```
 
 ---
