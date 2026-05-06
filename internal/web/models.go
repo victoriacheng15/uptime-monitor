@@ -111,10 +111,20 @@ type LatestResponse struct {
 	UpdatedAt time.Time     `json:"updated_at"`
 }
 
+type HistoryResponse struct {
+	History map[string][]CheckResult `json:"history"`
+}
+
+type LatencyAverage struct {
+	URL              string
+	AverageLatencyMS int
+}
+
 type TemplateData struct {
-	Landing    *SiteConfig
-	Evolution  *EvolutionConfig
-	Uptime     *LatestResponse
-	Year       int
-	APIBaseURL string
+	Landing         *SiteConfig
+	Evolution       *EvolutionConfig
+	Uptime          *LatestResponse
+	LatencyAverages []LatencyAverage
+	Year            int
+	APIBaseURL      string
 }
