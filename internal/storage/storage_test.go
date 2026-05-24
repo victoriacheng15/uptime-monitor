@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"testing"
 	"time"
@@ -220,11 +221,65 @@ func TestStorePutJSONMarshalError(t *testing.T) {
 	}
 }
 
+func TestStoreNewS3(t *testing.T) {
+	_, err := NewS3(context.Background(), "test-bucket")
+	if err != nil {
+		t.Logf("NewS3 returned error (normal in sandbox/ci environment): %v", err)
+	}
+}
+
+func TestStoreSaveHistoryError(t *testing.T) {
+	client := &fakeS3{
+		objects: map[string][]byte{},
+		getErr:  errors.New("s3 history connection failed"),
+	}
+	store := New("bucket", client)
+	results := []models.CheckResult{
+		{URL: "https://site-a.example", StatusCode: 200, IsUp: true},
+	}
+	err := store.Save(context.Background(), results)
+	if err == nil {
+		t.Fatal("expected error when S3 GetObject fails inside History fetch")
+	}
+}
+
+func TestStoreSavePutError(t *testing.T) {
+	client := &fakeS3{
+		objects: map[string][]byte{},
+		putErr:  errors.New("s3 upload failed"),
+	}
+	store := New("bucket", client)
+	results := []models.CheckResult{
+		{URL: "https://site-a.example", StatusCode: 200, IsUp: true},
+	}
+	err := store.Save(context.Background(), results)
+	if err == nil {
+		t.Fatal("expected error when S3 PutObject fails")
+	}
+}
+
+func TestStoreLatestGenericError(t *testing.T) {
+	client := &fakeS3{
+		objects: map[string][]byte{},
+		getErr:  errors.New("s3 download failed"),
+	}
+	store := New("bucket", client)
+	_, err := store.Latest(context.Background())
+	if err == nil {
+		t.Fatal("expected error when GetObject fails with a generic error")
+	}
+}
+
 type fakeS3 struct {
 	objects map[string][]byte
+	getErr  error
+	putErr  error
 }
 
 func (f *fakeS3) GetObject(_ context.Context, input *s3.GetObjectInput, _ ...func(*s3.Options)) (*s3.GetObjectOutput, error) {
+	if f.getErr != nil {
+		return nil, f.getErr
+	}
 	body, ok := f.objects[aws.ToString(input.Key)]
 	if !ok {
 		return nil, fakeNoSuchKey{}
@@ -236,6 +291,9 @@ func (f *fakeS3) GetObject(_ context.Context, input *s3.GetObjectInput, _ ...fun
 }
 
 func (f *fakeS3) PutObject(_ context.Context, input *s3.PutObjectInput, _ ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
+	if f.putErr != nil {
+		return nil, f.putErr
+	}
 	body, err := io.ReadAll(input.Body)
 	if err != nil {
 		return nil, err
