@@ -137,3 +137,25 @@ func TestPerformChecks(t *testing.T) {
 		t.Fatalf("expected second url, got %q", results[1].URL)
 	}
 }
+
+func TestHello(t *testing.T) {
+	got := Hello()
+	want := "hello from monitor"
+	if got != want {
+		t.Errorf("Hello() = %q; want %q", got, want)
+	}
+}
+
+func TestNewDefaultClient(t *testing.T) {
+	m := New(nil)
+	if m.client == nil {
+		t.Error("expected default HTTP client to be assigned when nil is passed")
+	}
+}
+
+func TestPackagePerformChecks(t *testing.T) {
+	results := PerformChecks([]string{})
+	if len(results) != 0 {
+		t.Errorf("expected 0 results, got %d", len(results))
+	}
+}

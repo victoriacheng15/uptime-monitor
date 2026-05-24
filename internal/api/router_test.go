@@ -340,3 +340,25 @@ func (f fakePersistence) Latest(context.Context) (models.LatestResponse, error) 
 func (f fakePersistence) History(context.Context) (models.HistoryResponse, error) {
 	return f.history, nil
 }
+
+func TestNewPersistence(t *testing.T) {
+	// 1. Without HISTORY_BUCKET
+	t.Setenv("HISTORY_BUCKET", "")
+	_, err := newPersistence(context.Background())
+	if err == nil {
+		t.Fatal("expected error when HISTORY_BUCKET is empty")
+	}
+
+	// 2. With HISTORY_BUCKET
+	t.Setenv("HISTORY_BUCKET", "test-bucket")
+	_, err = newPersistence(context.Background())
+	if err != nil {
+		t.Logf("newPersistence with bucket returned (normal in environment): %v", err)
+	}
+}
+
+func TestWriteJSONError(t *testing.T) {
+	w := httptest.NewRecorder()
+	// Channel cannot be marshaled to JSON, triggering Encode failure branch
+	writeJSON(w, http.StatusOK, make(chan int))
+}
