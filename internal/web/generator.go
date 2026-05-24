@@ -165,6 +165,7 @@ func averageLatencyByURL(history *HistoryResponse) []LatencyAverage {
 		averages[url] = LatencyAverage{
 			URL:              url,
 			AverageLatencyMS: total / len(entries),
+			History:          entries,
 		}
 	}
 
