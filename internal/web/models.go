@@ -118,6 +118,7 @@ type HistoryResponse struct {
 type LatencyAverage struct {
 	URL              string
 	AverageLatencyMS int
+	History          []CheckResult
 }
 
 type TemplateData struct {
