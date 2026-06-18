@@ -71,7 +71,9 @@ func (g *Generator) Generate() error {
 	}
 
 	// Render Landing (index.html)
-	if err := g.renderWithBase("index.html", "index.html", data); err != nil {
+	dataIndex := data
+	dataIndex.PageName = "index"
+	if err := g.renderWithBase("index.html", "index.html", dataIndex); err != nil {
 		return err
 	}
 
@@ -82,6 +84,7 @@ func (g *Generator) Generate() error {
 		APIBaseURL:      g.APIBaseURL,
 		Uptime:          uptimeData,
 		LatencyAverages: latencyAverages,
+		PageName:        "monitor",
 	}
 	// Inject specs directly for the monitor page loop as requested (not in landing.yaml)
 	monitorData.Landing.MonitorSpecs = []MonitorSpec{
@@ -95,7 +98,9 @@ func (g *Generator) Generate() error {
 	}
 
 	// Render Evolution
-	if err := g.renderWithBase("evolution.html", "evolution.html", data); err != nil {
+	dataEvo := data
+	dataEvo.PageName = "evolution"
+	if err := g.renderWithBase("evolution.html", "evolution.html", dataEvo); err != nil {
 		return err
 	}
 

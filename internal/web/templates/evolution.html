@@ -1,36 +1,36 @@
 {{ define "content" }}
-<header class="border-b border-zinc-800 py-8">
-  <h1 class="text-3xl font-bold tracking-tight text-zinc-100">{{ .Evolution.PageTitle }}</h1>
-  <p class="mt-2 text-zinc-400 max-w-2xl text-sm leading-relaxed">{{ .Evolution.IntroText }}</p>
+<header class="border-b border-stone-800 py-8">
+  <h1 class="text-3xl font-bold tracking-tight text-stone-100">{{ .Evolution.PageTitle }}</h1>
+  <p class="mt-2 text-stone-400 max-w-2xl text-sm leading-relaxed">{{ .Evolution.IntroText }}</p>
 </header>
 
 <div class="flex flex-col gap-16">
   {{ range .Evolution.Chapters }}
   <section class="flex flex-col gap-8">
     <div class="flex flex-col gap-2">
-      <h2 class="text-xl font-bold text-zinc-100">{{ .Title }}</h2>
-      <p class="text-zinc-400 text-sm leading-relaxed">{{ .Intro }}</p>
+      <h2 class="text-xl font-bold text-stone-100">{{ .Title }}</h2>
+      <p class="text-stone-400 text-sm leading-relaxed">{{ .Intro }}</p>
     </div>
 
-    <div class="relative flex flex-col gap-8 before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-zinc-800">
+    <div class="relative flex flex-col gap-8 before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-stone-800">
       {{ range .Timeline }}
       <div class="relative flex items-start gap-6 pl-12 text-sm">
-        <div class="absolute left-0 flex h-10 w-10 items-center justify-center rounded-full border-4 border-zinc-950 bg-zinc-900 text-zinc-500 shadow-sm">
-          <div class="h-2 w-2 rounded-full bg-cyan-500"></div>
+        <div class="absolute left-0 flex h-10 w-10 items-center justify-center rounded-full border-4 border-stone-950 bg-stone-900 text-stone-400 shadow-sm">
+          <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
         </div>
-        <article class="flex-1 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 shadow-sm flex flex-col gap-4">
+        <article class="flex-1 rounded-lg border border-stone-800 bg-stone-950/50 p-6 shadow-sm flex flex-col gap-4">
           <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            <h3 class="font-bold text-cyan-400">{{ .Title }}</h3>
-            <time class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">{{ .Date }}</time>
+            <h3 class="font-bold text-emerald-400">{{ .Title }}</h3>
+            <time class="text-xs font-semibold uppercase tracking-wider text-stone-400 font-mono">{{ .Date }}</time>
           </div>
-          <p class="text-zinc-400 whitespace-pre-line leading-relaxed">
+          <p class="text-stone-400 whitespace-pre-line leading-relaxed">
             {{ .Description }}
           </p>
           {{ if .Artifacts }}
           <div class="flex flex-wrap gap-2">
             {{ range .Artifacts }}
-            <a href="https://github.com/victoriacheng15/uptime-monitor/tree/main/{{ .URL }}" class="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-700 transition-colors" target="_blank" rel="noopener noreferrer">
-              <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            <a href="https://github.com/victoriacheng15/uptime-monitor/tree/main/{{ .URL }}" class="inline-flex items-center gap-1 rounded-md bg-stone-800 px-2.5 py-1 text-xs font-medium text-stone-300 hover:bg-stone-700 transition-colors" target="_blank" rel="noopener noreferrer">
+              <svg class="w-3 h-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
               {{ .Name }}
             </a>
             {{ end }}

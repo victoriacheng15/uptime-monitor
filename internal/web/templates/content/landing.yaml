@@ -2,56 +2,104 @@ header:
   project_name: "Uptime Monitor"
   site_url: "https://victoriacheng15.github.io/uptime-monitor"
 
-system_specification:
-  objective: "A cost-efficient, serverless uptime monitoring solution designed for personal fleet management, demonstrating AWS proficiency and SRE principles through Go, Lambda, S3-backed persistence, and scheduled EventBridge triggers."
+llms:
+  objective: "A serverless uptime monitoring solution designed for personal fleet management, demonstrating AWS proficiency and SRE principles through Go, Lambda, S3-backed persistence, and scheduled EventBridge triggers."
   stack: "Go, AWS Lambda, S3, EventBridge, Terraform, Tailwind CSS"
   pattern: "Serverless Event-Driven Monitor / Scheduled Fleet Polling"
   entry_point: "cmd/lambda/main.go (Backend) / cmd/web/main.go (SSG)"
   persistence_strategy: "S3-backed JSON storage for latest fleet snapshots and URL-keyed historical trendlines (Pulse)"
   observability: "Structured logging for check failures, S3 state tracking, and UI-driven Pulse trendlines for 5-hour availability windows."
-  machine_registry: "/api/evolution-registry.json"
 
-hero:
-  headline: "Fleet-Wide Availability Tracking"
-  sub_headline: "A serverless approach to infrastructure reliability and performance monitoring."
-  brief_description: "A lightweight SRE laboratory for managing multi-site uptime with high-signal visibility and minimal operational overhead."
-  cta_text: "Explore on GitHub"
-  cta_link: "https://github.com/victoriacheng15/uptime-monitor"
-  secondary_cta_text: "Launch Monitor"
-  secondary_cta_link: "monitor.html"
-  tertiary_cta_text: "See the Evolution"
-  tertiary_cta_link: "evolution.html"
+# Core Components & Logic
+tech:
+  core_component_1:
+    description: "AWS Lambda serves as the execution runtime, running a Go API router that handles HTTP endpoints and validates request actions."
+  core_component_2:
+    description: "Stores state objects directly in Amazon S3, maintaining latest.json for current fleet status snapshots and history.json for rolling historical trend metrics."
+  core_component_3:
+    description: "Invokes the Lambda cron path automatically every hour via Amazon EventBridge, driving background uptime checks to ensure persistent coverage."
 
-what_is_uptime_monitor:
-  title: "Reliability as a Priority"
-  content:
-    - "Uptime Monitor is a serverless platform engineering lab for operating reliable health checks across a fleet of targets with clear visibility into status, latency, and history."
-    - "It demonstrates practical serverless SRE work: automated scheduling, historical data persistence in S3, and clean architectural separation between monitoring and presentation."
-    - "The project favors event-driven simplicity and cost-efficient cloud primitives over complex, heavy-weight monitoring solutions."
+# Validation & Resiliency Testing
+proof:
+  reproducibility:
+    description: "Provisioned entirely using declarative Terraform modules, ensuring reproducible environment boots, IAM role boundary containment, and consistent AWS resource setups."
+  automated_verification:
+    description: "Unit tests validation with mock AWS client interfaces and testing harnesses, verifying JSON marshaling, state validation, and router responses under failure conditions."
+  telemetry_pipeline:
+    description: "Structured JSON logging emitted on health-check failures, standard error output capture, and historical pulse trendlines rendered in the frontend to visualize operational availability."
 
-key_features:
-  title: "Fleet Signals"
-  features:
-    - name: "Lambda Operations"
-      description: "Executes lightweight, concurrent health checks via AWS Lambda, minimizing compute costs while maximizing speed."
-      icon: "bolt"
-    - name: "S3 Persistence"
-      description: "Uses S3 as a low-cost database to store historical check results, driving trendline 'Pulse' visualization."
-      icon: "database"
-    - name: "Infrastructure as Code"
-      description: "Provisioned and managed declaratively with Terraform, ensuring reproducible cloud environments."
-      icon: "shield-check"
-    - name: "Go Performance"
-      description: "Built with Go for rapid startup (low cold starts) and reliable concurrent network operations."
-      icon: "code"
+# Design Trade-offs & Verification Logs
+reach:
+  # Architecture Blueprint
+  architecture_blueprint:
+    diagram_ascii: |2
+                     ┌───────────────────────┐
+                     │      EventBridge      │
+                     └───────────┬───────────┘
+                                 │ (Hourly Trigger)
+                                 ▼
+                     ┌───────────────────────┐
+          Client ───►│      AWS Lambda       │
+       (HTTP Req)    │    (Go API Router)    │
+                     └────┬──────┬──────┬────┘
+                          │      │      │
+           ┌──────────────┘      │      └──────────────┐
+           ▼ (/latest)           ▼ (/check)            ▼ (/history)
+      ┌──────────┐         ┌───────────┐         ┌──────────┐
+      │ S3 Read  │         │ Run check │         │ S3 Read  │
+      │  latest  │         │ against   │         │ history  │
+      │  .json   │         │ websites  │         │  .json   │
+      └──────────┘         └─────┬─────┘         └──────────┘
+                                 │ (Write outputs)
+                                 ▼
+                           ┌───────────┐
+                           │ S3 Bucket │
+                           │   Store   │
+                           └───────────┘
+  humble_pivots:
+    - title: "Serverless S3 Over Relational DB"
+      description: "Chose S3 JSON storage rather than DynamoDB or RDS. This minimized running costs and database operational overhead, since fleet snapshots and short histories only require basic key-value read/write access patterns."
+    - title: "Lambda Function URLs Instead of API Gateway"
+      description: "Avoided API Gateway for the backend API by utilizing Lambda Function URLs. This significantly reduced infrastructure complexity, since the project did not need advanced routing, request transformation, or edge authorizers at this stage."
+  objective_clarity:
+    description: "Evaluated under single-writer assumptions. Up to 5 monitored endpoints with concurrent execution checks capped to 10-second request timeouts to prevent AWS Lambda execution drift and control costs."
+  verifiable_outputs:
+    - title: "Validation Suite (Unit Tests)"
+      terminal_output: |
+        === RUN   TestRouter
+        === RUN   TestRouter/health_returns_healthy_response
+        === RUN   TestRouter/check_accepts_post
+        === RUN   TestRouter/latest_returns_stored_snapshot
+        === RUN   TestRouter/history_returns_stored_entries
+        --- PASS: TestRouter (0.00s)
+            --- PASS: TestRouter/health_returns_healthy_response (0.00s)
+            --- PASS: TestRouter/check_accepts_post (0.00s)
+            --- PASS: TestRouter/latest_returns_stored_snapshot (0.00s)
+            --- PASS: TestRouter/history_returns_stored_entries (0.00s)
+        PASS
+        ok  	uptime-monitor/internal/api	0.004s
 
-why_it_matters:
-  title: "Why It Matters"
-  points:
-    - "Shows ownership of serverless architecture, event-driven triggers, and S3-based data lifecycles."
-    - "Demonstrates SRE judgment through multi-site fleet management and historical trend analysis."
-    - "Adheres to high engineering standards with 80%+ test coverage and structured logging."
-    - "Maintains transparency through a narrative Evolution Log and documented architectural decisions (ADRs)."
+        === RUN   TestCheck
+        === RUN   TestCheck/marks_200_response_up
+        === RUN   TestCheck/marks_500_response_down
+        === RUN   TestCheck/records_request_error
+        --- PASS: TestCheck (0.00s)
+            --- PASS: TestCheck/marks_200_response_up (0.00s)
+            --- PASS: TestCheck/marks_500_response_down (0.00s)
+            --- PASS: TestCheck/records_request_error (0.00s)
+        PASS
+        ok  	uptime-monitor/internal/monitor	0.003s
+
+        === RUN   TestStoreLatest
+        === RUN   TestStoreLatest/returns_stored_latest_response
+        --- PASS: TestStoreLatest (0.00s)
+            --- PASS: TestStoreLatest/returns_stored_latest_response (0.00s)
+        === RUN   TestStoreHistory
+        === RUN   TestStoreHistory/returns_stored_history_response
+        --- PASS: TestStoreHistory (0.00s)
+            --- PASS: TestStoreHistory/returns_stored_history_response (0.00s)
+        PASS
+        ok  	uptime-monitor/internal/storage	0.004s
 
 footer:
   author: "Victoria Cheng"
