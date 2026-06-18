@@ -3,19 +3,13 @@ package web
 import "time"
 
 type SiteConfig struct {
-	Header       HeaderConfig        `yaml:"header"`
-	SystemSpec   SystemSpecification `yaml:"system_specification"`
-	Hero         HeroConfig          `yaml:"hero"`
-	WhatIsUptime WhatIsUptimeMonitor `yaml:"what_is_uptime_monitor"`
-	KeyFeatures  KeyFeaturesConfig   `yaml:"key_features"`
-	WhyItMatters WhyItMattersConfig  `yaml:"why_it_matters"`
-	MonitorSpecs []MonitorSpec       `yaml:"monitor_specs"`
-	Footer       FooterConfig        `yaml:"footer"`
-}
-
-type MonitorSpec struct {
-	Label string `yaml:"label"`
-	Value string `yaml:"value"`
+	Header       HeaderConfig  `yaml:"header"`
+	LLMS         LLMSConfig    `yaml:"llms"`
+	Tech         TechConfig    `yaml:"tech"`
+	Proof        ProofConfig   `yaml:"proof"`
+	Reach        ReachConfig   `yaml:"reach"`
+	Footer       FooterConfig  `yaml:"footer"`
+	MonitorSpecs []MonitorSpec `yaml:"monitor_specs"`
 }
 
 type HeaderConfig struct {
@@ -23,47 +17,63 @@ type HeaderConfig struct {
 	SiteURL     string `yaml:"site_url"`
 }
 
-type SystemSpecification struct {
+type LLMSConfig struct {
 	Objective           string `yaml:"objective"`
 	Stack               string `yaml:"stack"`
 	Pattern             string `yaml:"pattern"`
 	EntryPoint          string `yaml:"entry_point"`
 	PersistenceStrategy string `yaml:"persistence_strategy"`
 	Observability       string `yaml:"observability"`
-	MachineRegistry     string `yaml:"machine_registry"`
 }
 
-type HeroConfig struct {
-	Headline         string `yaml:"headline"`
-	SubHeadline      string `yaml:"sub_headline"`
-	BriefDescription string `yaml:"brief_description"`
-	CTAText          string `yaml:"cta_text"`
-	CTALink          string `yaml:"cta_link"`
-	SecondaryCTAText string `yaml:"secondary_cta_text"`
-	SecondaryCTALink string `yaml:"secondary_cta_link"`
-	TertiaryCTAText  string `yaml:"tertiary_cta_text"`
-	TertiaryCTALink  string `yaml:"tertiary_cta_link"`
+type TechConfig struct {
+	CoreComponent1 ComponentConfig `yaml:"core_component_1"`
+	CoreComponent2 ComponentConfig `yaml:"core_component_2"`
+	CoreComponent3 ComponentConfig `yaml:"core_component_3"`
 }
 
-type WhatIsUptimeMonitor struct {
-	Title   string   `yaml:"title"`
-	Content []string `yaml:"content"`
-}
-
-type KeyFeaturesConfig struct {
-	Title    string    `yaml:"title"`
-	Features []Feature `yaml:"features"`
-}
-
-type Feature struct {
-	Name        string `yaml:"name"`
+type ComponentConfig struct {
 	Description string `yaml:"description"`
-	Icon        string `yaml:"icon"`
 }
 
-type WhyItMattersConfig struct {
-	Title  string   `yaml:"title"`
-	Points []string `yaml:"points"`
+type ProofConfig struct {
+	Reproducibility       ProofDetail `yaml:"reproducibility"`
+	AutomatedVerification ProofDetail `yaml:"automated_verification"`
+	TelemetryPipeline     ProofDetail `yaml:"telemetry_pipeline"`
+}
+
+type ProofDetail struct {
+	Description string `yaml:"description"`
+}
+
+type ReachConfig struct {
+	ArchitectureBlueprint ArchitectureBlueprintConfig `yaml:"architecture_blueprint"`
+	HumblePivots          []PivotConfig               `yaml:"humble_pivots"`
+	ObjectiveClarity      ObjectiveClarityConfig      `yaml:"objective_clarity"`
+	VerifiableOutputs     []VerifiableOutputConfig    `yaml:"verifiable_outputs"`
+}
+
+type ArchitectureBlueprintConfig struct {
+	DiagramASCII string `yaml:"diagram_ascii"`
+}
+
+type PivotConfig struct {
+	Title       string `yaml:"title"`
+	Description string `yaml:"description"`
+}
+
+type ObjectiveClarityConfig struct {
+	Description string `yaml:"description"`
+}
+
+type VerifiableOutputConfig struct {
+	Title          string `yaml:"title"`
+	TerminalOutput string `yaml:"terminal_output"`
+}
+
+type MonitorSpec struct {
+	Label string `yaml:"label"`
+	Value string `yaml:"value"`
 }
 
 type FooterConfig struct {
@@ -128,4 +138,5 @@ type TemplateData struct {
 	LatencyAverages []LatencyAverage
 	Year            int
 	APIBaseURL      string
+	PageName        string
 }

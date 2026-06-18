@@ -1,72 +1,117 @@
 {{ define "content" }}
 <!-- Hero Section -->
-<section class="flex flex-col gap-6 py-12 border-b border-zinc-800">
-  <h2 class="text-4xl sm:text-6xl font-bold tracking-tight text-zinc-100 leading-tight">
-    {{ .Landing.Hero.Headline }}
-  </h2>
-  <p class="text-xl text-zinc-400 max-w-2xl leading-relaxed">
-    {{ .Landing.Hero.BriefDescription }}
+<section class="flex flex-col gap-6 py-12 border-b border-stone-800">
+  <p class="text-xl text-stone-400 max-w-3xl leading-relaxed">
+    {{ .Landing.LLMS.Objective }}
   </p>
-  <div class="flex flex-wrap gap-4">
-    <a href="{{ .Landing.Hero.CTALink }}" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg bg-zinc-900 text-zinc-100 border border-zinc-800 font-bold hover:bg-zinc-800 transition-colors">
-      {{ .Landing.Hero.CTAText }}
+  <div class="flex flex-wrap gap-4 mt-2">
+    <a href="monitor.html" class="px-6 py-3 rounded-lg bg-stone-950 text-stone-100 border border-stone-800 font-bold hover:bg-stone-800 transition-colors">
+      Launch Monitor
     </a>
-    <a href="{{ .Landing.Hero.SecondaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-zinc-100 font-bold hover:bg-zinc-900 transition-colors">
-      {{ .Landing.Hero.SecondaryCTAText }}
+    <a href="evolution.html" class="px-6 py-3 rounded-lg border border-stone-800 text-stone-100 font-bold hover:bg-stone-950 transition-colors">
+      See the Evolution
     </a>
-    <a href="{{ .Landing.Hero.TertiaryCTALink }}" class="px-6 py-3 rounded-lg border border-zinc-800 text-zinc-100 font-bold hover:bg-zinc-900 transition-colors">
-      {{ .Landing.Hero.TertiaryCTAText }}
+    <a href="{{ .Landing.Footer.GithubLink }}/uptime-monitor" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg border border-stone-800 text-stone-100 font-bold hover:bg-stone-950 transition-colors">
+      Explore on GitHub
     </a>
   </div>
 </section>
 
-<!-- Narrative Sections -->
-<div class="flex flex-col gap-12 text-sm">
-  <section class="flex flex-col gap-6">
-    <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.WhatIsUptime.Title }}</h3>
-    <div class="flex flex-col gap-4 text-zinc-400 leading-relaxed">
-      {{ range .Landing.WhatIsUptime.Content }}
-      <p>{{ . }}</p>
+
+<!-- Runtime Architecture Blueprint -->
+<section class="flex flex-col gap-6">
+  <h3 class="text-2xl font-bold text-emerald-400">Architecture Blueprint</h3>
+  <div class="p-6 rounded-xl border border-stone-800 bg-stone-950 font-mono text-sm overflow-x-auto whitespace-pre text-emerald-400">
+{{ .Landing.Reach.ArchitectureBlueprint.DiagramASCII }}
+  </div>
+</section>
+
+<!-- Core Components & Logic -->
+<section class="flex flex-col gap-6">
+  <h3 class="text-2xl font-bold text-emerald-400">Core Components & Logic</h3>
+  <ul class="flex flex-col gap-4 list-none p-0">
+    <li class="flex gap-4 items-start border-b border-stone-900 pb-4">
+      <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+      </div>
+      <div class="flex flex-col gap-1">
+        <h4 class="text-lg font-bold text-stone-100">Data Plane</h4>
+        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent1.Description }}</p>
+      </div>
+    </li>
+    <li class="flex gap-4 items-start border-b border-stone-900 pb-4">
+      <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+      </div>
+      <div class="flex flex-col gap-1">
+        <h4 class="text-lg font-bold text-stone-100">Diagnostics Agent</h4>
+        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent2.Description }}</p>
+      </div>
+    </li>
+    <li class="flex gap-4 items-start">
+      <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+      </div>
+      <div class="flex flex-col gap-1">
+        <h4 class="text-lg font-bold text-stone-100">Telemetry Instrumentation</h4>
+        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent3.Description }}</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- Validation & Resiliency Testing -->
+<section class="flex flex-col gap-6">
+  <h3 class="text-2xl font-bold text-emerald-400">Validation & Resiliency Testing</h3>
+  <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
+      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Reproducibility</h4>
+      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.Reproducibility.Description }}</p>
+    </div>
+    <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
+      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Verification</h4>
+      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.AutomatedVerification.Description }}</p>
+    </div>
+    <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
+      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Telemetry</h4>
+      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.TelemetryPipeline.Description }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Design Trade-offs & Verification Logs -->
+<section class="flex flex-col gap-8">
+  <h3 class="text-2xl font-bold text-emerald-400">Design Trade-offs & Verification Logs</h3>
+  
+  <div class="flex flex-col gap-6">
+    <h4 class="text-sm font-semibold text-stone-400 uppercase tracking-wider">Humble Pivots</h4>
+    <div class="flex flex-col gap-6">
+      {{ range .Landing.Reach.HumblePivots }}
+      <div class="flex flex-col gap-2 border-l-2 border-emerald-500/30 pl-4">
+        <h5 class="text-lg font-bold text-stone-100">{{ .Title }}</h5>
+        <p class="text-stone-400 text-sm leading-relaxed">{{ .Description }}</p>
+      </div>
       {{ end }}
     </div>
-  </section>
+  </div>
 
-  <section class="flex flex-col gap-6">
-    <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.WhyItMatters.Title }}</h3>
-    <ul class="flex flex-col gap-4 list-none p-0">
-      {{ range .Landing.WhyItMatters.Points }}
-      <li class="flex gap-4 items-start">
-        <svg class="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-        <span class="text-zinc-400 leading-relaxed">{{ . }}</span>
-      </li>
-      {{ end }}
-    </ul>
-  </section>
-</div>
+  <div class="flex flex-col gap-4">
+    <h4 class="text-sm font-semibold text-stone-400 uppercase tracking-wider">Objective Clarity</h4>
+    <div class="border-l-2 border-emerald-500/30 pl-4 text-stone-300 text-sm leading-relaxed">
+      <p>{{ .Landing.Reach.ObjectiveClarity.Description }}</p>
+    </div>
+  </div>
 
-<!-- Key Features -->
-<section class="flex flex-col gap-8">
-  <h3 class="text-2xl font-bold text-cyan-400">{{ .Landing.KeyFeatures.Title }}</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-    {{ range .Landing.KeyFeatures.Features }}
-    <article class="flex flex-col gap-4 p-6 rounded-xl bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-all">
-      <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400">
-        {{ if eq .Icon "bolt" }}
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-        {{ else if eq .Icon "database" }}
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-        {{ else if eq .Icon "shield-check" }}
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
-        {{ else if eq .Icon "code" }}
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-        {{ end }}
-      </div>
+  <div class="flex flex-col gap-4">
+    <h4 class="text-sm font-semibold text-stone-400 uppercase tracking-wider font-mono">Verifiable Outputs</h4>
+    <div class="flex flex-col gap-4">
+      {{ range .Landing.Reach.VerifiableOutputs }}
       <div class="flex flex-col gap-2">
-        <h4 class="text-lg font-bold text-zinc-100 leading-none">{{ .Name }}</h4>
-        <p class="text-zinc-400 text-sm leading-relaxed">{{ .Description }}</p>
+        <h5 class="text-xs font-semibold text-stone-300">{{ .Title }}</h5>
+        <pre class="p-4 rounded-lg border border-stone-800 bg-stone-950 font-mono text-[10px] sm:text-xs overflow-x-auto text-stone-400">{{ .TerminalOutput }}</pre>
       </div>
-    </article>
-    {{ end }}
+      {{ end }}
+    </div>
   </div>
 </section>
 {{ end }}

@@ -1,28 +1,28 @@
 {{ define "content" }}
 <div class="flex flex-col gap-12">
   <div class="flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-zinc-100">Fleet Status</h2>
+    <h2 class="text-2xl font-bold text-stone-100">Fleet Status</h2>
     {{- if .Uptime -}}
-    <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+    <span class="text-[10px] font-mono text-stone-400 uppercase tracking-widest">
       Last Check: {{ .Uptime.UpdatedAt.Format "2006-01-02 15:04 MST" }}
     </span>
     {{- end -}}
   </div>
 
-  <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl">
+  <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-900 shadow-xl">
     <table class="w-full text-left text-sm">
-      <thead class="bg-zinc-950/50 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <thead class="bg-stone-950/50 text-xs font-semibold uppercase tracking-wider text-stone-400">
         <tr>
           <th class="px-6 py-4">Site Name</th>
           <th class="px-6 py-4">Status</th>
           <th class="px-6 py-4 text-right">Latency</th>
         </tr>
       </thead>
-      <tbody id="sites-table-body" class="divide-y divide-zinc-800">
+      <tbody id="sites-table-body" class="divide-y divide-stone-800">
         {{- if .Uptime -}}
           {{- range .Uptime.Sites -}}
-          <tr class="hover:bg-zinc-800 transition-colors">
-            <td class="px-6 py-4 font-medium text-zinc-100 font-mono">{{ .URL }}</td>
+          <tr class="hover:bg-stone-800 transition-colors">
+            <td class="px-6 py-4 font-medium text-stone-100 font-mono">{{ .URL }}</td>
             <td class="px-6 py-4">
               {{- if .IsUp -}}
               <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-emerald-400 bg-emerald-400/10">UP</span>
@@ -30,12 +30,12 @@
               <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-red-400 bg-red-400/10">DOWN</span>
               {{- end -}}
             </td>
-            <td class="px-6 py-4 text-right tabular-nums text-zinc-300 font-mono">{{ .LatencyMS }}ms</td>
+            <td class="px-6 py-4 text-right tabular-nums text-stone-300 font-mono">{{ .LatencyMS }}ms</td>
           </tr>
           {{- end -}}
         {{- else -}}
           <tr>
-            <td class="px-6 py-12 text-center text-zinc-500" colspan="3">
+            <td class="px-6 py-12 text-center text-stone-400" colspan="3">
               No monitoring data available for this snapshot.
             </td>
           </tr>
@@ -52,30 +52,30 @@
     -}}
     
     {{- range $specs }}
-    <article class="rounded-lg border border-zinc-800 bg-zinc-900 p-4 shadow-sm flex flex-col gap-1">
-      <h3 class="text-xs font-medium uppercase text-cyan-400 tracking-wider">{{ .Label }}</h3>
-      <p class="text-lg font-semibold text-zinc-100 font-mono">{{ .Value }}</p>
+    <article class="rounded-lg border border-stone-800 bg-stone-900 p-4 shadow-sm flex flex-col gap-1">
+      <h3 class="text-xs font-medium uppercase text-emerald-400 tracking-wider">{{ .Label }}</h3>
+      <p class="text-lg font-semibold text-stone-100 font-mono">{{ .Value }}</p>
     </article>
     {{- end }}
   </div>
 
   <div class="flex flex-col gap-4">
-    <h2 class="text-2xl font-bold text-zinc-100">History</h2>
+    <h2 class="text-2xl font-bold text-stone-100">History</h2>
 
-    <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-xl">
+    <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-900 shadow-xl">
       <table class="w-full text-left text-sm">
-        <thead class="bg-zinc-950/50 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <thead class="bg-stone-950/50 text-xs font-semibold uppercase tracking-wider text-stone-400">
           <tr>
             <th class="px-6 py-4">Site Name</th>
             <th class="px-6 py-4 text-center">Uptime History</th>
             <th class="px-6 py-4 text-right">Average Latency</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-zinc-800">
+        <tbody class="divide-y divide-stone-800">
           {{- if .LatencyAverages -}}
             {{- range .LatencyAverages -}}
-            <tr class="hover:bg-zinc-800 transition-colors">
-              <td class="px-6 py-4 font-medium text-zinc-100 font-mono">{{ .URL }}</td>
+            <tr class="hover:bg-stone-800 transition-colors">
+              <td class="px-6 py-4 font-medium text-stone-100 font-mono">{{ .URL }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center justify-center gap-2">
                   {{- range .History -}}
@@ -87,12 +87,12 @@
                   {{- end -}}
                 </div>
               </td>
-              <td class="px-6 py-4 text-right tabular-nums text-zinc-300 font-mono">{{ .AverageLatencyMS }}ms</td>
+              <td class="px-6 py-4 text-right tabular-nums text-stone-300 font-mono">{{ .AverageLatencyMS }}ms</td>
             </tr>
             {{- end -}}
           {{- else -}}
             <tr>
-              <td class="px-6 py-12 text-center text-zinc-500" colspan="3">
+              <td class="px-6 py-12 text-center text-stone-400" colspan="3">
                 No latency history available for this snapshot.
               </td>
             </tr>
