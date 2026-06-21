@@ -3,13 +3,14 @@ package web
 import "time"
 
 type SiteConfig struct {
-	Header       HeaderConfig  `yaml:"header"`
-	LLMS         LLMSConfig    `yaml:"llms"`
-	Tech         TechConfig    `yaml:"tech"`
-	Proof        ProofConfig   `yaml:"proof"`
-	Reach        ReachConfig   `yaml:"reach"`
-	Footer       FooterConfig  `yaml:"footer"`
-	MonitorSpecs []MonitorSpec `yaml:"monitor_specs"`
+	Header       HeaderConfig       `yaml:"header"`
+	LLMS         LLMSConfig         `yaml:"llms"`
+	Architecture ArchitectureConfig `yaml:"architecture"`
+	Tech         []ComponentConfig  `yaml:"tech"`
+	Proof        []ProofDetail      `yaml:"proof"`
+	Reach        ReachConfig        `yaml:"reach"`
+	Footer       FooterConfig       `yaml:"footer"`
+	MonitorSpecs []MonitorSpec      `yaml:"monitor_specs"`
 }
 
 type HeaderConfig struct {
@@ -26,35 +27,24 @@ type LLMSConfig struct {
 	Observability       string `yaml:"observability"`
 }
 
-type TechConfig struct {
-	CoreComponent1 ComponentConfig `yaml:"core_component_1"`
-	CoreComponent2 ComponentConfig `yaml:"core_component_2"`
-	CoreComponent3 ComponentConfig `yaml:"core_component_3"`
+type ArchitectureConfig struct {
+	DiagramASCII string `yaml:"diagram_ascii"`
 }
 
 type ComponentConfig struct {
+	Title       string `yaml:"title"`
 	Description string `yaml:"description"`
 }
 
-type ProofConfig struct {
-	Reproducibility       ProofDetail `yaml:"reproducibility"`
-	AutomatedVerification ProofDetail `yaml:"automated_verification"`
-	TelemetryPipeline     ProofDetail `yaml:"telemetry_pipeline"`
-}
-
 type ProofDetail struct {
+	Title       string `yaml:"title"`
 	Description string `yaml:"description"`
 }
 
 type ReachConfig struct {
-	ArchitectureBlueprint ArchitectureBlueprintConfig `yaml:"architecture_blueprint"`
-	HumblePivots          []PivotConfig               `yaml:"humble_pivots"`
-	ObjectiveClarity      ObjectiveClarityConfig      `yaml:"objective_clarity"`
-	VerifiableOutputs     []VerifiableOutputConfig    `yaml:"verifiable_outputs"`
-}
-
-type ArchitectureBlueprintConfig struct {
-	DiagramASCII string `yaml:"diagram_ascii"`
+	HumblePivots      []PivotConfig            `yaml:"humble_pivots"`
+	ObjectiveClarity  ObjectiveClarityConfig   `yaml:"objective_clarity"`
+	VerifiableOutputs []VerifiableOutputConfig `yaml:"verifiable_outputs"`
 }
 
 type PivotConfig struct {

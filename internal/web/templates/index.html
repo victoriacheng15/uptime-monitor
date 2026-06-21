@@ -22,7 +22,7 @@
 <section class="flex flex-col gap-6">
   <h3 class="text-2xl font-bold text-emerald-400">Architecture Blueprint</h3>
   <div class="p-6 rounded-xl border border-stone-800 bg-stone-950 font-mono text-sm overflow-x-auto whitespace-pre text-emerald-400">
-{{ .Landing.Reach.ArchitectureBlueprint.DiagramASCII }}
+{{ .Landing.Architecture.DiagramASCII }}
   </div>
 </section>
 
@@ -30,33 +30,23 @@
 <section class="flex flex-col gap-6">
   <h3 class="text-2xl font-bold text-emerald-400">Core Components & Logic</h3>
   <ul class="flex flex-col gap-4 list-none p-0">
-    <li class="flex gap-4 items-start border-b border-stone-900 pb-4">
+    {{ range $index, $item := .Landing.Tech }}
+    <li class="flex gap-4 items-start border-b border-stone-900 pb-4 last:border-b-0 last:pb-0">
       <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        {{ if eq $index 0 }}
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-      </div>
-      <div class="flex flex-col gap-1">
-        <h4 class="text-lg font-bold text-stone-100">Data Plane</h4>
-        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent1.Description }}</p>
-      </div>
-    </li>
-    <li class="flex gap-4 items-start border-b border-stone-900 pb-4">
-      <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        {{ else if eq $index 1 }}
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-      </div>
-      <div class="flex flex-col gap-1">
-        <h4 class="text-lg font-bold text-stone-100">Diagnostics Agent</h4>
-        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent2.Description }}</p>
-      </div>
-    </li>
-    <li class="flex gap-4 items-start">
-      <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+        {{ else }}
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+        {{ end }}
       </div>
       <div class="flex flex-col gap-1">
-        <h4 class="text-lg font-bold text-stone-100">Telemetry Instrumentation</h4>
-        <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Tech.CoreComponent3.Description }}</p>
+        <h4 class="text-lg font-bold text-stone-100">{{ $item.Title }}</h4>
+        <p class="text-stone-400 text-sm leading-relaxed">{{ $item.Description }}</p>
       </div>
     </li>
+    {{ end }}
   </ul>
 </section>
 
@@ -64,18 +54,12 @@
 <section class="flex flex-col gap-6">
   <h3 class="text-2xl font-bold text-emerald-400">Validation & Resiliency Testing</h3>
   <div class="flex flex-col gap-6">
+    {{ range .Landing.Proof }}
     <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
-      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Reproducibility</h4>
-      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.Reproducibility.Description }}</p>
+      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">{{ .Title }}</h4>
+      <p class="text-stone-400 text-sm leading-relaxed">{{ .Description }}</p>
     </div>
-    <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
-      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Verification</h4>
-      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.AutomatedVerification.Description }}</p>
-    </div>
-    <div class="flex flex-col gap-2 p-6 rounded-xl bg-stone-950/50 border border-stone-800">
-      <h4 class="text-sm font-semibold text-stone-100 uppercase tracking-wider">Telemetry</h4>
-      <p class="text-stone-400 text-sm leading-relaxed">{{ .Landing.Proof.TelemetryPipeline.Description }}</p>
-    </div>
+    {{ end }}
   </div>
 </section>
 
