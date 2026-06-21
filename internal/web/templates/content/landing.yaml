@@ -10,29 +10,9 @@ llms:
   persistence_strategy: "S3-backed JSON storage for latest fleet snapshots and URL-keyed historical trendlines (Pulse)"
   observability: "Structured logging for check failures, S3 state tracking, and UI-driven Pulse trendlines for 5-hour availability windows."
 
-# Core Components & Logic
-tech:
-  core_component_1:
-    description: "AWS Lambda serves as the execution runtime, running a Go API router that handles HTTP endpoints and validates request actions."
-  core_component_2:
-    description: "Stores state objects directly in Amazon S3, maintaining latest.json for current fleet status snapshots and history.json for rolling historical trend metrics."
-  core_component_3:
-    description: "Invokes the Lambda cron path automatically every hour via Amazon EventBridge, driving background uptime checks to ensure persistent coverage."
-
-# Validation & Resiliency Testing
-proof:
-  reproducibility:
-    description: "Provisioned entirely using declarative Terraform modules, ensuring reproducible environment boots, IAM role boundary containment, and consistent AWS resource setups."
-  automated_verification:
-    description: "Unit tests validation with mock AWS client interfaces and testing harnesses, verifying JSON marshaling, state validation, and router responses under failure conditions."
-  telemetry_pipeline:
-    description: "Structured JSON logging emitted on health-check failures, standard error output capture, and historical pulse trendlines rendered in the frontend to visualize operational availability."
-
-# Design Trade-offs & Verification Logs
-reach:
-  # Architecture Blueprint
-  architecture_blueprint:
-    diagram_ascii: |2
+# Architecture Blueprint
+architecture:
+  diagram_ascii: |2
                      ┌───────────────────────┐
                      │      EventBridge      │
                      └───────────┬───────────┘
@@ -42,20 +22,41 @@ reach:
           Client ───►│      AWS Lambda       │
        (HTTP Req)    │    (Go API Router)    │
                      └────┬──────┬──────┬────┘
-                          │      │      │
-           ┌──────────────┘      │      └──────────────┐
-           ▼ (/latest)           ▼ (/check)            ▼ (/history)
-      ┌──────────┐         ┌───────────┐         ┌──────────┐
-      │ S3 Read  │         │ Run check │         │ S3 Read  │
-      │  latest  │         │ against   │         │ history  │
-      │  .json   │         │ websites  │         │  .json   │
-      └──────────┘         └─────┬─────┘         └──────────┘
+                           │      │      │
+            ┌──────────────┘      │      └──────────────┐
+            ▼ (/latest)           ▼ (/check)            ▼ (/history)
+       ┌──────────┐         ┌───────────┐         ┌──────────┐
+       │ S3 Read  │         │ Run check │         │ S3 Read  │
+       │  latest  │         │ against   │         │ history  │
+       │  .json   │         │ websites  │         │  .json   │
+       └──────────┘         └─────┬─────┘         └──────────┘
                                  │ (Write outputs)
                                  ▼
                            ┌───────────┐
                            │ S3 Bucket │
                            │   Store   │
                            └───────────┘
+
+# Core Components & Logic
+tech:
+  - title: "AWS Lambda Execution"
+    description: "AWS Lambda serves as the execution runtime, running a Go API router that handles HTTP endpoints and validates request actions."
+  - title: "Amazon S3 Storage"
+    description: "Stores state objects directly in Amazon S3, maintaining latest.json for current fleet status snapshots and history.json for rolling historical trend metrics."
+  - title: "EventBridge Cron Trigger"
+    description: "Invokes the Lambda cron path automatically every hour via Amazon EventBridge, driving background uptime checks to ensure persistent coverage."
+
+# Validation & Resiliency Testing
+proof:
+  - title: "Reproducibility"
+    description: "Provisioned entirely using declarative Terraform modules, ensuring reproducible environment boots, IAM role boundary containment, and consistent AWS resource setups."
+  - title: "Automated Verification"
+    description: "Unit tests validation with mock AWS client interfaces and testing harnesses, verifying JSON marshaling, state validation, and router responses under failure conditions."
+  - title: "Telemetry Pipeline"
+    description: "Structured JSON logging emitted on health-check failures, standard error output capture, and historical pulse trendlines rendered in the frontend to visualize operational availability."
+
+# Design Trade-offs & Verification Logs
+reach:
   humble_pivots:
     - title: "Serverless S3 Over Relational DB"
       description: "Chose S3 JSON storage rather than DynamoDB or RDS. This minimized running costs and database operational overhead, since fleet snapshots and short histories only require basic key-value read/write access patterns."
