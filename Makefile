@@ -1,10 +1,17 @@
-.PHONY: format test coverage update lambda-build lambda-package setup-tailwind web-build
+.PHONY: format test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build
 
 format:
 	gofmt -w ./cmd ./internal
 
 test:
 	go test -v ./cmd/... ./internal/...
+
+test-bdd:
+	go test -v ./e2e/...
+
+test-all:
+	@$(MAKE) test
+	@$(MAKE) test-bdd
 
 coverage:
 	go test -coverprofile=coverage.out ./...
