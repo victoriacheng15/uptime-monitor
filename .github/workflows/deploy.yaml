@@ -1,4 +1,4 @@
-name: AWS Deployment
+name: AWS Lambda Deployment
 
 on:
   push:
@@ -29,9 +29,7 @@ env:
 
 jobs:
   deploy:
-    name: Lambda Deployment
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v6

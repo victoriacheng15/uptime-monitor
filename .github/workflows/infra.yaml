@@ -1,4 +1,4 @@
-name: Infra
+name: IaC Format and Validate
 
 on:
   push:
@@ -13,12 +13,9 @@ on:
 
 jobs:
   tofu:
-    name: OpenTofu Format and Validate
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v7
-
       - uses: opentofu/setup-opentofu@v2
 
       - name: Check formatting
