@@ -30,48 +30,68 @@ The system runs as a small serverless monitoring loop: Terraform provisions AWS 
 
 Deployment flow:
 
-```mermaid
-flowchart LR
-    Source["GitHub Repository"]
-    Actions["GitHub Actions"]
-    Terraform["Terraform"]
-    AWS["Lambda, S3, EventBridge, IAM"]
-
-    Source --> Actions
-    Actions --> Terraform
-    Terraform --> AWS
+```text
+                [1] DEPLOYMENT & CI/CD PIPELINE
+                ===============================
+                       Push to main / PR
+                               │
+                               ▼
+                  ┌───────────────────────┐
+                  │  GitHub CI/CD Runner  │
+                  └─────┬───────────┬─────┘
+                        │           │
+      ┌─────────────────┘           └─────────────────┐
+      ▼ (Deploy Backend)                              ▼ (Deploy SSG Page)
+┌─────────────────────────────┐                 ┌─────────────────────────────┐
+│ 1. Run Go Unit/E2E Tests    │                 │ 1. Fetch telemetry logs     │
+│ 2. Package Lambda Bootstrap │                 │    from Lambda API Endpoint │
+│ 3. Run Terraform Apply (IaC)│                 │ 2. Compile Tailwind CSS     │
+└──────────────┬──────────────┘                 │ 3. Generate static HTML     │
+               │                                └──────────────┬──────────────┘
+    (Reads / Writes tfstate)                                   │
+               │                                               │
+               ▼                                               │
+┌─────────────────────────────┐                                │ (Publishes static
+│     S3 Backend Bucket       │                                │  dist assets)
+│   (uptime-monitor-tfstate)  │                                │
+└──────────────┬──────────────┘                                ▼
+               │                                ┌─────────────────────────────┐
+               │ (Configures Lambda,            │    GitHub Pages Website     │
+               │  S3, & EventBridge)            └─────────────────────────────┘
+               ▼
+┌─────────────────────────────┐
+│   AWS Lambda & S3 Bucket    │
+└─────────────────────────────┘
 ```
 
-Runtime flow:
+Application flow:
 
-```mermaid
-flowchart LR
-    Schedule["EventBridge"]
-    Lambda["AWS Lambda"]
-    Health["GET /health"]
-    Check["POST /check"]
-    Latest["GET /latest"]
-    History["GET /history"]
-    Sites["Monitored sites"]
-    Store["Storage layer"]
-    LatestFile["latest.json"]
-    HistoryFile["history.json"]
-    S3["S3 bucket"]
-
-    Schedule -- every hour --> Lambda
-    Lambda --> Health
-    Lambda --> Check
-    Lambda --> Latest
-    Lambda --> History
-    Check -- run checks --> Sites
-    Sites -- results --> Check
-    Check -- save results --> Store
-    Store -- write --> LatestFile
-    Store -- update --> HistoryFile
-    LatestFile -- store --> S3
-    HistoryFile -- store --> S3
-    Latest -- read latest.json --> S3
-    History -- read history.json --> S3
+```text
+              [2] APPLICATION FLOW
+              ====================
+              ┌───────────────────────┐
+              │      EventBridge      │
+              └───────────┬───────────┘
+                          │ (Hourly Trigger)
+                          ▼
+              ┌───────────────────────┐
+   Client ───►│      AWS Lambda       │
+(HTTP Req)    │    (Go API Router)    │
+              └────┬──────┬──────┬────┘
+                    │      │      │
+     ┌──────────────┘      │      └──────────────┐
+     ▼ (/latest)           ▼ (/check)            ▼ (/history)
+┌──────────┐         ┌───────────┐         ┌──────────┐
+│ S3 Read  │         │ Run check │         │ S3 Read  │
+│  latest  │         │ against   │         │ history  │
+│  .json   │         │ websites  │         │  .json   │
+└──────────┘         └─────┬─────┘         └──────────┘
+                          │ (Write outputs)
+                          ▼
+                    ┌───────────┐
+                    │ S3 Bucket │
+                    │   Store   │
+                    └───────────┘
 ```
 
 ---

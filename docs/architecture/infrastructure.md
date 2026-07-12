@@ -18,20 +18,18 @@ The infrastructure is managed with Terraform-compatible OpenTofu so AWS resource
 
 The monitor stores runtime data as JSON in S3. `latest.json` holds the current status for all monitored websites, while `history.json` keeps recent status history for each website.
 
-```mermaid
-sequenceDiagram
-    participant EventBridge
-    participant Lambda as Go Lambda
-    participant Site as Monitored Websites
-    participant S3
-
-    EventBridge->>Lambda: Trigger every hour
-    loop For each configured website
-        Lambda->>Site: Send health request
-        Site-->>Lambda: Return status result
-    end
-    Lambda->>S3: Write latest.json
-    Lambda->>S3: Update history.json
+```text
+EventBridge          Lambda              Websites              S3
+    │                  │                    │                  │
+    │ (Hourly Trigger) │                    │                  │
+    ├─────────────────►│                    │                  │
+    │                  │                    │                  │
+    │                  │ ── Send request ─► │                  │
+    │                  │ ◄── Status/result ─│                  │
+    │                  │                    │                  │
+    │                  │ ────────────────────────────────────► │
+    │                  │   Write latest.json & history.json    │
+    │                  │                    │                  │
 ```
 
 ## Scheduled Checks
