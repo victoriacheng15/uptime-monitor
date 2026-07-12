@@ -1,0 +1,14 @@
+{
+  "default": true,
+  "MD013": false,
+  "MD033": {
+    "allowed_elements": [
+      "details",
+      "summary",
+      "video"
+    ]
+  },
+  "MD060": {
+    "style": "atx_closed"
+  }
+}

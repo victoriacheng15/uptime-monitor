@@ -1,7 +1,14 @@
-.PHONY: format test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build
+.PHONY: format format-md lint-md test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build
 
 format:
 	gofmt -w ./cmd ./internal
+
+format-md:
+	npx markdownlint-cli --fix "**/*.md"
+
+lint-md:
+	@echo "Linting Markdown files..."
+	npx markdownlint-cli "**/*.md"
 
 test:
 	go test -v ./cmd/... ./internal/...

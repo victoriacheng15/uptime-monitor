@@ -13,6 +13,40 @@ llms:
 # Architecture Blueprint
 architecture:
   diagram_ascii: |2
+                     [1] DEPLOYMENT & CI/CD PIPELINE
+                     ===============================
+                            Push to main / PR
+                                    │
+                                    ▼
+                        ┌───────────────────────┐
+                        │  GitHub CI/CD Runner  │
+                        └─────┬───────────┬─────┘
+                              │           │
+            ┌─────────────────┘           └─────────────────┐
+            ▼ (Deploy Backend)                              ▼ (Deploy SSG Page)
+     ┌─────────────────────────────┐                 ┌─────────────────────────────┐
+     │ 1. Run Go Unit/E2E Tests    │                 │ 1. Fetch telemetry logs     │
+     │ 2. Package Lambda Bootstrap │                 │    from Lambda API Endpoint │
+     │ 3. Run Terraform Apply (IaC)│                 │ 2. Compile Tailwind CSS     │
+     └──────────────┬──────────────┘                 │ 3. Generate static HTML     │
+                    │                                └──────────────┬──────────────┘
+         (Reads / Writes tfstate)                                   │
+                    │                                               │
+                    ▼                                               │
+     ┌─────────────────────────────┐                                │ (Publishes static
+     │     S3 Backend Bucket       │                                │  dist assets)
+     │   (uptime-monitor-tfstate)  │                                │
+     └──────────────┬──────────────┘                                ▼
+                    │                                ┌─────────────────────────────┐
+                    │ (Configures Lambda,            │    GitHub Pages Website     │
+                    │  S3, & EventBridge)            └─────────────────────────────┘
+                    ▼
+     ┌─────────────────────────────┐
+     │   AWS Lambda & S3 Bucket    │
+     └─────────────────────────────┘
+
+                     [2] APPLICATION FLOW
+                     ====================
                      ┌───────────────────────┐
                      │      EventBridge      │
                      └───────────┬───────────┘
@@ -101,6 +135,52 @@ reach:
             --- PASS: TestStoreHistory/returns_stored_history_response (0.00s)
         PASS
         ok  	uptime-monitor/internal/storage	0.004s
+
+    - title: "Integration Suite (BDD / E2E Tests)"
+      terminal_output: |
+        === RUN   TestFeatures
+        Feature: EventBridge Cron Scheduled Trigger
+          Scenario: Scheduled EventBridge trigger invokes the checks handler
+          Scenario: Missing monitoring targets prevents check execution
+
+        Feature: HTTP Polling Client
+          Scenario: Polling healthy and unhealthy endpoints
+          Scenario: HTTP client handles redirect response codes as healthy status
+
+        Feature: S3 Snapshot Persistence
+          Scenario: Writing first status snapshots to empty S3 bucket
+          Scenario: Appending results to existing rolling history in S3
+
+        6 scenarios (6 passed)
+        22 steps (22 passed)
+        --- PASS: TestFeatures (0.01s)
+        PASS
+        ok  	uptime-monitor/e2e	0.015s
+
+    - title: "Infrastructure Registry (Tofu State List)"
+      terminal_output: |
+        $ tofu state list
+        module.events.aws_cloudwatch_event_rule.scheduled_check
+        module.events.aws_cloudwatch_event_target.scheduled_check
+        module.events.aws_lambda_permission.eventbridge
+        module.lambda.data.aws_iam_policy_document.assume_role
+        module.lambda.data.aws_iam_policy_document.history_bucket_access
+        module.lambda.aws_iam_policy.history_bucket_access
+        module.lambda.aws_iam_role.lambda
+        module.lambda.aws_iam_role_policy_attachment.basic_execution
+        module.lambda.aws_iam_role_policy_attachment.history_bucket_access
+        module.lambda.aws_lambda_function.backend
+        module.lambda.aws_lambda_function_url.backend
+        module.lambda.aws_lambda_permission.function_url
+        module.lambda.aws_lambda_permission.function_url_invoke
+        module.s3.aws_s3_bucket.history
+        module.s3.aws_s3_bucket.tfstate
+        module.s3.aws_s3_bucket_public_access_block.history
+        module.s3.aws_s3_bucket_public_access_block.tfstate
+        module.s3.aws_s3_bucket_server_side_encryption_configuration.history
+        module.s3.aws_s3_bucket_server_side_encryption_configuration.tfstate
+        module.s3.aws_s3_bucket_versioning.history
+        module.s3.aws_s3_bucket_versioning.tfstate
 
 footer:
   author: "Victoria Cheng"
