@@ -1,0 +1,23 @@
+# Air configuration for local development hot-reloading.
+# Docs: https://github.com/air-verse/air
+
+[build]
+  # Command to build the local dev server binary.
+  cmd = "go build -o ./tmp/server ./cmd/server"
+  # Path to the compiled binary Air will run.
+  bin = "./tmp/server"
+  # File extensions that trigger a rebuild.
+  include_ext = ["go"]
+  # Directories Air will not watch.
+  exclude_dir = ["dist", "tmp", "bin", "vendor"]
+  # Kill the running binary before rebuilding.
+  kill_delay = "200ms"
+  # Delay before triggering a rebuild after a file change.
+  delay = 500
+
+[log]
+  time = true
+
+[misc]
+  # Clean the tmp directory on exit.
+  clean_on_exit = true
