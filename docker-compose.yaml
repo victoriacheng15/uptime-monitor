@@ -1,0 +1,25 @@
+# =============================================================================
+# NOTE: This compose file has not been tested with podman-compose yet.
+# In theory it should start the container correctly since it mirrors the
+# manual podman run command in the Dockerfile header comment.
+#
+# To run manually (verified):
+#   podman build -t uptime-monitor-dev .
+#   podman run -it --rm \
+#     -p 8080:8080 \
+#     -v "$(pwd):/app:Z" \
+#     -e MONITOR_TARGETS="https://google.com,https://github.com" \
+#     uptime-monitor-dev
+# =============================================================================
+
+services:
+  dev:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app:Z
+    environment:
+      - PORT=8080
+      - MONITOR_TARGETS=https://google.com,https://github.com
+      - API_BASE_URL=http://localhost:8080

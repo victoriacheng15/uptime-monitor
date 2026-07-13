@@ -1,4 +1,4 @@
-.PHONY: format format-md lint-md test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build
+.PHONY: format format-md lint-md test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build dev-build dev-run dev-clean
 
 format:
 	gofmt -w ./cmd ./internal
@@ -47,3 +47,16 @@ web-build: setup-tailwind
 	go run ./cmd/web && \
 	./tailwindcss -i ./internal/web/templates/styles.css -o ./dist/styles.css --minify && \
 	rm tailwindcss
+
+dev-build:
+	podman build -t uptime-monitor-dev .
+
+dev-run:
+	podman run -it --rm \
+		-p 8080:8080 \
+		-v "$(PWD):/app:Z" \
+		-e MONITOR_TARGETS="https://google.com,https://github.com" \
+		uptime-monitor-dev
+
+dev-clean:
+	podman rmi uptime-monitor-dev
