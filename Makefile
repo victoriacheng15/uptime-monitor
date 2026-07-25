@@ -1,4 +1,6 @@
-.PHONY: format format-md lint-md test test-bdd test-all coverage update lambda-build lambda-package setup-tailwind web-build dev-build dev-run dev-clean
+.PHONY: format format-md lint-md test test-bdd test-all cov update lambda-build lambda-package setup-tailwind web-build dev-build dev-run dev-clean dev-logs
+
+DEV_IMAGE ?= uptime-monitor-dev
 
 format:
 	gofmt -w ./cmd ./internal
@@ -20,7 +22,7 @@ test-all:
 	@$(MAKE) test
 	@$(MAKE) test-bdd
 
-coverage:
+cov:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
 	rm coverage.out
@@ -49,14 +51,19 @@ web-build: setup-tailwind
 	rm tailwindcss
 
 dev-build:
-	podman build -t uptime-monitor-dev .
+	podman build -t $(DEV_IMAGE) .
 
 dev-run:
 	podman run -it --rm \
+		-v "$(PWD):/workspace:Z" \
 		-p 8080:8080 \
-		-v "$(PWD):/app:Z" \
 		-e MONITOR_TARGETS="https://google.com,https://github.com" \
-		uptime-monitor-dev
+		--name $(DEV_IMAGE) \
+		$(DEV_IMAGE)
 
 dev-clean:
-	podman rmi uptime-monitor-dev
+	podman rmi $(DEV_IMAGE)
+	@echo "Image '$(DEV_IMAGE)' removed."
+
+dev-logs:
+	podman logs -f $(DEV_IMAGE)
